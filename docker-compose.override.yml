@@ -18,7 +18,7 @@ services:
     image: ${FRONT_NOME_IMAGEM}
     container_name: ${FRONT_NOME_CONTAINER}
     ports:
-      - "${FRONT_PORT}:${FRONT_PORT}"
+      - "${FRONT_PORT}:3000"
     volumes:
       - ./front:/usr/src/app
       - /usr/src/app/node_modules

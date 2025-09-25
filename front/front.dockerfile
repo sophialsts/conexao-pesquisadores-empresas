@@ -6,7 +6,7 @@ WORKDIR usr/src/app
 COPY package*.json ./
 
 RUN npm install
-
+EXPOSE 3000
 COPY . .
 
 
@@ -30,8 +30,6 @@ RUN npm run build
 FROM node:18 AS prod
 WORKDIR /usr/src/app
 
-ARG PORT
-
 COPY package*.json ./
 RUN npm install --production
 
@@ -40,5 +38,5 @@ COPY --from=builder /usr/src/app/public ./public
 COPY --from=builder /usr/src/app/next.config.ts ./next.config.ts
 
 ENV NODE_ENV=production
-EXPOSE $PORT
+EXPOSE 3000
 CMD ["npm", "start"]
