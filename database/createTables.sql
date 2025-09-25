@@ -7,23 +7,25 @@ CREATE TYPE "evaluation_criterion_type" AS ENUM (
 
 CREATE TABLE "companies" (
   "id" uuid PRIMARY KEY DEFAULT (gen_random_uuid()),
-  "name" uuid NOT NULL DEFAULT (gen_random_uuid()),
-  "embedding" "VECTOR(1536)"
+  "name" varchar(255) NOT NULL,
+  "embedding" VECTOR(1536),
+  "created_at" timestamptz DEFAULT CURRENT_TIMESTAMP,
+  "updated_at" timestamptz DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE "embedding_curriculos" (
   "researcher_id" uuid PRIMARY KEY,
-  "abstract_embeddings" "VECTOR(1536)",
-  "articles_embeddings" "VECTOR(1536)",
-  "project_name_embeddings" "VECTOR(1536)",
-  "description_project_embeddings" "VECTOR(1536)",
-  "great_area_embeddings" "VECTOR(1536)",
-  "area_specialty_embeddings" "VECTOR(1536)",
-  "patent_embeddings" "VECTOR(1536)",
-  "book_chapter_embeddings" "VECTOR(1536)",
-  "event_name_embeddings" "VECTOR(1536)",
-  "created_at" timestamptz,
-  "updated_in" timestamptz
+  "abstract_embeddings" VECTOR(1536),
+  "articles_embeddings" VECTOR(1536),
+  "project_name_embeddings" VECTOR(1536),
+  "description_project_embeddings" VECTOR(1536),
+  "great_area_embeddings" VECTOR(1536),
+  "area_specialty_embeddings" VECTOR(1536),
+  "patent_embeddings" VECTOR(1536),
+  "book_chapter_embeddings" VECTOR(1536),
+  "event_name_embeddings" VECTOR(1536),
+  "created_at" timestamptz DEFAULT CURRENT_TIMESTAMP,
+  "updated_at" timestamptz DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE "company_recommendations_for_researchers" (
@@ -31,6 +33,8 @@ CREATE TABLE "company_recommendations_for_researchers" (
   "company_id" uuid NOT NULL,
   "area" varchar(255),
   "recommendation_reason" text,
+  "created_at" timestamptz DEFAULT CURRENT_TIMESTAMP,
+  "updated_at" timestamptz DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY ("researcher_id", "company_id")
 );
 
@@ -40,6 +44,8 @@ CREATE TABLE "researcher_evaluations_by_company" (
   "criterion_name" evaluation_criterion_type NOT NULL,
   "criterion_value" real NOT NULL,
   "criterion_text" text,
+  "created_at" timestamptz DEFAULT CURRENT_TIMESTAMP,
+  "updated_at" timestamptz DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY ("researcher_id", "company_id", "criterion_name")
 );
 
@@ -58,3 +64,5 @@ ALTER TABLE "researcher_evaluations_by_company" ADD FOREIGN KEY ("researcher_id"
 ALTER TABLE "company_recommendations_for_researchers" ADD FOREIGN KEY ("company_id") REFERENCES "companies" ("id") ON DELETE CASCADE;
 
 ALTER TABLE "researcher_evaluations_by_company" ADD FOREIGN KEY ("company_id") REFERENCES "companies" ("id") ON DELETE CASCADE;
+
+ALTER TABLE "researcher_evaluations_by_company" ADD CONSTRAINT "check_criterion_value_range"  CHECK ("criterion_value" >= 0.0 AND "criterion_value" <= 1.0);
