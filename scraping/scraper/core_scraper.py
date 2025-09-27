@@ -11,7 +11,7 @@ SELETOR_AREA = "div.bg-popover.text-primary:not(.h-6):not(.inline-flex)"
 SELETOR_QUANT_PAGS = "p.text-base"
 
 def raspar_dados_empresas(driver):
-    dados_empresas_ba = [] # Inicializa o dicionário
+    dados_empresas_ba = [] # Inicializa a lista que vai armazenar os dicionários
 
     try:
         # Extrai a última parte que é o número de páginas
