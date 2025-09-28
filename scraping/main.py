@@ -10,7 +10,9 @@ def main():
         if driver:
             print('Driver configurado com sucesso')
             dados_extraidos = raspar_dados_empresas(driver)
-            salvar_em_csv(dados_extraidos)
+            #salvar_em_csv(dados_extraidos)
+
+            return dados_extraidos
 
     except Exception as e:
         print(f"\n--- ERRO INESPERADO NA EXECUÇÃO PRINCIPAL ---")
