@@ -1,9 +1,6 @@
 from scraper.driver_config import configurar_chrome_driver
-#from scraper.core_scraper import raspar_dados_empresas_ba
+from scraper.core_scraper import raspar_dados_empresas
 #from scraper.utils import salvar_em_csv
-
-# Coloque aqui url da página do pesquisador desejado
-URL_PAGINA = "https://vitrine.sebraestartups.com.br/?state=BA&page={pg}"
 
 def exibir_resultados(dados):
     """Função para formatar e exibir os dados extraídos no console."""
@@ -30,7 +27,7 @@ def main():
         driver = configurar_chrome_driver()
         if driver:
             print('Driver configurado com sucesso')
-            #dados_extraidos = raspar_dados_empresas_ba(driver, URL_PAGINA)
+            dados_extraidos = raspar_dados_empresas(driver)
             #exibir_resultados(dados_extraidos)
             #salvar_em_csv(dados_extraidos)
 
