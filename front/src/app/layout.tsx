@@ -3,6 +3,8 @@ import { Geist, Geist_Mono, Lexend } from "next/font/google";
 import "./globals.css";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/Sidebar";
+import { AppPageHeader } from "@/components/Header";
+import Example from "@/components/Navbar";
 
 
 const lexendSans = Lexend(
@@ -42,6 +44,7 @@ export default function RootLayout({
         <SidebarProvider>
           <AppSidebar/>
           <SidebarInset>
+            <AppPageHeader/>
             <main>
               {children}
             </main>
