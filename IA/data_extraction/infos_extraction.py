@@ -2,23 +2,26 @@ import csv
 import os
 import sys
 
-projeto_raiz = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+def configurar_path():
+    projeto_raiz = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 
-# Pastas que precisam estar no sys.path
-pastas_para_adicionar = [
-    projeto_raiz,
-    os.path.join(projeto_raiz, 'scraping'),
-    os.path.join(projeto_raiz, 'scraper'), 
-]
+    # Pastas que precisam estar no sys.path
+    pastas_para_adicionar = [
+        projeto_raiz,
+        os.path.join(projeto_raiz, 'scraping'),
+        os.path.join(projeto_raiz, 'scraper'), 
+    ]
 
-for pasta in pastas_para_adicionar:
-    if pasta not in sys.path:
-        sys.path.append(pasta)
+    for pasta in pastas_para_adicionar:
+        if pasta not in sys.path:
+            sys.path.append(pasta)
+            
+    return projeto_raiz
 
 def obter_pesquisadores():
     lista_dicts_pesquisadores = []
     
-    caminho_arquivo = os.path.join(projeto_raiz, "data", "dados_relevantes.csv")
+    caminho_arquivo = os.path.join(configurar_path(), "data", "dados_relevantes.csv")
     
     try:
         with open(caminho_arquivo, 'r', encoding='utf-8') as arquivo:
@@ -44,7 +47,7 @@ def obter_pesquisadores():
 def obter_empresas():
     lista_dict_empresas = []
 
-    caminho_arquivo = os.path.join(projeto_raiz, "data", "empresas.csv")
+    caminho_arquivo = os.path.join(configurar_path(), "data", "empresas.csv")
     
     try:
         with open(caminho_arquivo, 'r', encoding='utf-8') as arquivo:
