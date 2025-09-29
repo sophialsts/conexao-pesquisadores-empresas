@@ -15,8 +15,8 @@ for pasta in pastas_para_adicionar:
     if pasta not in sys.path:
         sys.path.append(pasta)
 
-def obter_abstract():
-    lista_abstracts = []
+def obter_pesquisadores():
+    lista_dicts_pesquisadores = []
     
     caminho_arquivo = os.path.join(projeto_raiz, "data", "dados_relevantes.csv")
     
@@ -26,19 +26,23 @@ def obter_abstract():
             
             for linha in leitor:
                 abstract = linha.get('abstract', '')
-                lista_abstracts.append(abstract)
+                id_pesquisador = linha.get('researcher_id', '')
+                dict_pesquisador = {
+                    "researcher_id": id_pesquisador,
+                    "abstract": abstract 
+                }
+                lista_dicts_pesquisadores.append(dict_pesquisador)
             
-            print(f"Total de abstracts extraídos: {len(lista_abstracts)}")
+            print(f"Total de dicionários de pesquisadores extraídos: {len(lista_dicts_pesquisadores)}")
             
     except Exception as e:
         print(f"Erro ao processar arquivo: {e}")
         return []
     
-    return lista_abstracts
+    return lista_dicts_pesquisadores
 
-
-def obter_descricoes():
-    lista_descricoes = []
+def obter_empresas():
+    lista_dict_empresas = []
 
     caminho_arquivo = os.path.join(projeto_raiz, "data", "empresas.csv")
     
@@ -48,12 +52,17 @@ def obter_descricoes():
             
             for linha in leitor:
                 descricao = linha.get('descricao', '')
-                lista_descricoes.append(descricao)
+                nomes_empresas = linha.get('nome', '')
+                dict_empresa = {
+                    "nome_empresa": nomes_empresas,
+                    "descricao": descricao
+                }
+                lista_dict_empresas.append(dict_empresa)
             
-            print(f"Total de descrições extraídas: {len(lista_descricoes)}")
+            print(f"Total de dicionários de empresas extraídas: {len(lista_dict_empresas)}")
             
     except Exception as e:
         print(f"Erro ao processar arquivo: {e}")
         return []
     
-    return lista_descricoes
+    return lista_dict_empresas
