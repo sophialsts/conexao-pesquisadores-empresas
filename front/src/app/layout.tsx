@@ -1,6 +1,18 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Lexend } from "next/font/google";
 import "./globals.css";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/Sidebar";
+import { AppPageHeader } from "@/components/Header";
+
+const lexendSans = Lexend(
+  {
+    weight: ["400", "500", "700", "900"],
+    variable: "--font-lexend-sans",
+    subsets: ["latin"]
+  }
+)
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,9 +37,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${lexendSans.variable}  ${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
       >
-        {children}
+        <SidebarProvider>
+          <AppSidebar/>
+          <SidebarInset>
+            <AppPageHeader/>
+            <main>
+              {children}
+            </main>
+          </SidebarInset>
+        </SidebarProvider>
       </body>
     </html>
   );
