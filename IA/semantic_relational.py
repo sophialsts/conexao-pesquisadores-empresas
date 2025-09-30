@@ -11,7 +11,6 @@ class ResponseFormatter(BaseModel):
     flexibilidade: float
     experienciaAcademica: float
 
-
 # Criar cliente OpenAI
 def criar_client() -> OpenAI:
     load_dotenv()
@@ -31,6 +30,7 @@ def generate_relation_reason(empresas: dict, pesquisadores: dict) -> dict:
     Analise o abstract do pesquisador, defina e retorne de 0 a 1 em float o quanto o pesquisador se aplica para cada critério na empresa específica. 
     
     Abstract: {pesquisadores['abstract']}
+    Eventos participados: {pesquisadores['event_name']}
     
     Critérios:
     
