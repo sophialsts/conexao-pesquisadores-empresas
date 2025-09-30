@@ -1,6 +1,6 @@
-
 import os
 import time
+import json
 from openai import OpenAI
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
@@ -24,7 +24,7 @@ def criar_client() -> OpenAI:
     return client
 
 # Gerar razões das relações definidas/encontradas, retorna dicionário
-def generate_relation_reason(empresa: dict, pesquisador: dict) -> dict:
+def generate_link_reason(empresa: dict, pesquisador: dict) -> dict:
     client = instructor.patch(criar_client())
 
     # Retorna de um pesquisador
@@ -61,6 +61,9 @@ def generate_relation_reason(empresa: dict, pesquisador: dict) -> dict:
             "experienciaAcademica": analysis_response.experienciaAcademica,
             "justificativa": analysis_response.justificativa
         }
+
+        print(json.dumps(result, indent=2, ensure_ascii=False))
+        
         return result
 
     except Exception as e:
