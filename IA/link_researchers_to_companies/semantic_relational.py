@@ -8,6 +8,37 @@ from pydantic import BaseModel, Field
 from typing import Optional
 import instructor
 
+TAGS_AREAS_EMPRESAS = [
+    'Agronegócio',
+    'Alimentos e Bebidas',
+    'Audiovisual',
+    'Automotivo e Mobilidade',
+    'Capital e Investimentos',
+    'Comunicação e Mídia',
+    'Comércio eletrônico',
+    'Construção e Imóveis',
+    'Crédito e Finanças',
+    'Educação',
+    'Energia',
+    'Esportes e Lazer',
+    'Gestão e Consultoria',
+    'Governo e Poder Público',
+    'Hotelaria e Turismo',
+    'Impacto socioambiental',
+    'Indústria e Transformação',
+    'Jogos e Entretenimento',
+    'Logística e Transportes',
+    'Moda e Vestuário',
+    'Óleo e Gás',
+    'Saúde e Bem Estar',
+    'Segurança e Defesa',
+    'Seguros',
+    'Serviços profissionais',
+    'Tecnologia da Informação',
+    'Telecomunicações',
+    'Varejo e Atacado'
+]
+
 # Formatar saída do prompt
 class RelationAnalysis(BaseModel):
     areaEstudo: float = Field(..., description="Score de 0.0 a 1.0 para a afinidade da área de estudo do pesquisador com a empresa.")
@@ -33,7 +64,7 @@ def generate_link_reason(empresa: dict, pesquisador: dict) -> dict:
     prompt = f"""
         Siga estas regras estritamente:
         1. Avalie o pesquisador em uma escala de 0.0 a 1.0 para cada critério: areaEstudo, flexibilidade, experienciaAcademica.
-        2. Com base nesses scores, **gere uma justificativa concisa** que explique por que este pesquisador seria (ou não) uma boa escolha para a empresa.
+        2. Com base nesses scores, **gere uma justificativa concisa** que explique por que este pesquisador é uma boa escolha para a empresa.
         """
 
     try:
