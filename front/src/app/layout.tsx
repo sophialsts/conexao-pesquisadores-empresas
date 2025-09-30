@@ -42,10 +42,12 @@ export default function RootLayout({
         <SidebarProvider>
           <AppSidebar/>
           <SidebarInset>
-            <AppPageHeader/>
-            <main>
-              {children}
-            </main>
+            <div className="w-full pb-8 px-4">
+              <AppPageHeader/>
+              <main>
+                {children}
+              </main>
+            </div>
           </SidebarInset>
         </SidebarProvider>
       </body>

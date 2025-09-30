@@ -1,9 +1,11 @@
 import { HeroPesquisadores } from "@/components/Hero";
+import { PesquisadoresSugeridosArea } from "@/components/PesquisadoresSugeridos";
 
 export default function PesquisadoresPage() {
   return (
-    <div className="font-sans">
+    <div className="">
         <HeroPesquisadores/>
+        <PesquisadoresSugeridosArea/>
     </div>
   );
 }
