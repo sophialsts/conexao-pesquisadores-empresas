@@ -58,9 +58,11 @@ def obter_empresas():
             for linha in leitor:
                 descricao = linha.get('descricao', '')
                 nomes_empresas = linha.get('nome', '')
+                área = linha.get('area', '')
                 dict_empresa = {
                     "nome_empresa": nomes_empresas,
-                    "descricao": descricao
+                    "descricao": descricao,
+                    "area": área
                 }
                 lista_dict_empresas.append(dict_empresa)
             

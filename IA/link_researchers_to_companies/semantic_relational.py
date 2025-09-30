@@ -8,43 +8,60 @@ from pydantic import BaseModel, Field
 from typing import Optional
 import instructor
 
-TAGS_AREAS_EMPRESAS = [
-    'Agronegócio',
-    'Alimentos e Bebidas',
-    'Audiovisual',
-    'Automotivo e Mobilidade',
-    'Capital e Investimentos',
-    'Comunicação e Mídia',
-    'Comércio eletrônico',
-    'Construção e Imóveis',
-    'Crédito e Finanças',
-    'Educação',
-    'Energia',
-    'Esportes e Lazer',
-    'Gestão e Consultoria',
-    'Governo e Poder Público',
-    'Hotelaria e Turismo',
-    'Impacto socioambiental',
-    'Indústria e Transformação',
-    'Jogos e Entretenimento',
-    'Logística e Transportes',
-    'Moda e Vestuário',
-    'Óleo e Gás',
-    'Saúde e Bem Estar',
-    'Segurança e Defesa',
-    'Seguros',
-    'Serviços profissionais',
-    'Tecnologia da Informação',
-    'Telecomunicações',
-    'Varejo e Atacado'
-]
-
 # Formatar saída do prompt
 class RelationAnalysis(BaseModel):
     areaEstudo: float = Field(..., description="Score de 0.0 a 1.0 para a afinidade da área de estudo do pesquisador com a empresa.")
     flexibilidade: float = Field(..., description="Score de 0.0 a 1.0 para a variedade de temas de pesquisa do pesquisador.")
     experienciaAcademica: float = Field(..., description="Score de 0.0 a 1.0 para a relevância das experiências (eventos) do pesquisador para a empresa.")
-    justificativa: Optional[str] = Field(default=None, description="Justificativa concisa do porquê o pesquisador se encaixa na empresa. Gerar apenas se a soma dos scores for > 2.2.")
+    justificativa: Optional[str] = Field(default=None, description="Justificativa concisa do porquê o pesquisador se encaixa na empresa.")
+
+def imprimir_relatorio_colorido(resultado: dict):
+    """
+    Imprime um relatório formatado, com emojis e cores, diretamente
+    no terminal, sem precisar da biblioteca rich ou do formato JSON.
+    """
+    # Classe interna para guardar os códigos de cores ANSI
+    class Cores:
+        RESET = '\033[0m'
+        BOLD = '\033[1m'
+        VERDE = '\033[92m'
+        AZUL = '\033[94m'
+        AMARELO = '\033[93m'
+        VERMELHO = '\033[91m'
+
+    # --- Se a análise deu erro ---
+    if "error" in resultado:
+        print(f"{Cores.BOLD}{Cores.VERMELHO}‼️ ERRO NA ANÁLISE ‼️{Cores.RESET}")
+        print(f"  🏢 {Cores.AZUL}Empresa:{Cores.RESET} {resultado.get('companie_name', 'N/A')}")
+        print(f"  👤 {Cores.AZUL}Pesquisador:{Cores.RESET} {resultado.get('researcher_id', 'N/A')}")
+        print(f"  {Cores.AMARELO}Motivo:{Cores.RESET} {resultado['error']}")
+        print("="*60 + "\n")
+        return
+
+    # --- Relatório de Sucesso ---
+    soma = resultado.get('areaEstudo', 0) + resultado.get('flexibilidade', 0) + resultado.get('experienciaAcademica', 0)
+    
+    print("="*60)
+    print(f"{Cores.BOLD}📊 Análise de Compatibilidade (Score Total: {soma:.2f}) 📊{Cores.RESET}")
+    print(f"  🏢 {Cores.AZUL}Empresa:{Cores.RESET} {resultado['companie_name']}")
+    print(f"  👤 {Cores.AZUL}Pesquisador:{Cores.RESET} {resultado['researcher_id']}")
+    print("-"*60)
+    
+    print(f"{Cores.BOLD}Scores:{Cores.RESET}")
+    print(f"  📚 {Cores.AZUL}Área de Estudo:{Cores.RESET} {Cores.VERDE}{resultado['areaEstudo']:.2f}{Cores.RESET}")
+    print(f"  💡 {Cores.AZUL}Flexibilidade:{Cores.RESET} {Cores.VERDE}{resultado['flexibilidade']:.2f}{Cores.RESET}")
+    print(f"  🎓 {Cores.AZUL}Experiência Acadêmica:{Cores.RESET} {Cores.VERDE}{resultado['experienciaAcademica']:.2f}{Cores.RESET}")
+    print("-"*60)
+
+    justificativa = resultado.get('justificativa')
+    if justificativa:
+        print(f"✅ {Cores.BOLD}{Cores.VERDE}Justificativa:{Cores.RESET}")
+        print(f"   {justificativa}")
+    else:
+        print(f"❌ {Cores.BOLD}{Cores.AMARELO}Justificativa:{Cores.RESET}")
+        print("   Nenhuma foi gerada (score total <= 2.2).")
+    
+    print("="*60 + "\n")
 
 # Criar cliente OpenAI
 def criar_client() -> OpenAI:
@@ -56,15 +73,26 @@ def criar_client() -> OpenAI:
     return client
 
 # Gerar razões das relações definidas/encontradas, retorna dicionário
-def generate_link_reason(empresa: dict, pesquisador: dict) -> dict:
+def generate_link_reason(empresa: dict, pesquisador: dict) -> dict: # Adicionado tags_em_comum
     client = instructor.patch(criar_client())
 
     # Retorna de um pesquisador
-
+    
+    # PROMPT CORRIGIDO E COMPLETO
     prompt = f"""
-        Siga estas regras estritamente:
-        1. Avalie o pesquisador em uma escala de 0.0 a 1.0 para cada critério: areaEstudo, flexibilidade, experienciaAcademica.
-        2. Com base nesses scores, **gere uma justificativa concisa** que explique por que este pesquisador é uma boa escolha para a empresa.
+        Sua tarefa é avaliar a compatibilidade entre um pesquisador e uma empresa e gerar uma justificativa de marketing, assertiva e positiva.
+
+        Dados para Análise:
+        - Empresa '{empresa['nome_empresa']}' da área '{empresa['area']}': {empresa['descricao']}
+        - Pesquisador (Abstract): {pesquisador['abstract']}
+        - Eventos participados pelo pesquisador: {pesquisador.get('event_name', 'Nenhum informado')}
+
+        Instruções:
+        1. Com base nos dados, avalie o pesquisador em uma escala de 0.0 a 1.0 para os critérios: areaEstudo, flexibilidade, experienciaAcademica.
+        2. Ignore o próximo passo se a soma dos scores dos critérios for menor que 2,2.
+        3. Gere uma justificativa de texto que:
+           - SEJA TOTALMENTE POSITIVA. Não mencione fraquezas ou pontos a melhorar.
+           - SEJA ESPECÍFICA, conectando detalhes do abstract com a descrição da empresa.
         """
 
     try:
@@ -86,7 +114,7 @@ def generate_link_reason(empresa: dict, pesquisador: dict) -> dict:
             "experienciaAcademica": analysis_response.experienciaAcademica,
             "justificativa": analysis_response.justificativa
         }
-
+        
         print(json.dumps(result, indent=2, ensure_ascii=False))
         
         return result
@@ -114,6 +142,7 @@ def reasons_for_companies(empresas: list[dict], pesquisadores: list[dict]) -> li
             
             reason = generate_link_reason(empresa, pesquisador)
             reasons_researchers_for_companies.append(reason)
+            imprimir_relatorio_colorido(reason)
             print("--- Análise concluída.")
     tempo_final = time.time()
     print(f"Duração de gerar relações baseado nos critérios para pesquisadores e empresas: {tempo_final-tempo_inicial:.2f}")
