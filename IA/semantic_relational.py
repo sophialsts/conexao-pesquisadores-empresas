@@ -2,6 +2,15 @@ import os
 import time
 from openai import OpenAI
 from dotenv import load_dotenv
+from pydantic import BaseModel, Field
+
+class ResponseFormatter(BaseModel):
+    """Always use this tool to structure your response to the input."""
+    answer: str = Field(description="The answer to the input question")
+    areaEstudo: float 
+    flexibilidade: float
+    experienciaAcademica: float
+
 
 # Criar cliente OpenAI
 def criar_client() -> OpenAI:
@@ -15,14 +24,21 @@ def generate_relation_reason(empresas: dict, pesquisadores: dict) -> dict:
     reasons_to_companies = {}
 
     # Retorna de um pesquisador
-    # Falta adicionar os critérios
 
     prompt = f"""
     Com base na descrição da empresa '{empresas['nome_empresa']}': {empresas['descricao']}
     
-    Analise o abstract do pesquisador, e veja se ele se adequa à empresa.
+    Analise o abstract do pesquisador, defina e retorne de 0 a 1 em float o quanto o pesquisador se aplica para cada critério na empresa específica. 
     
     Abstract: {pesquisadores['abstract']}
+    
+    Critérios:
+    
+    - Área de Estudo: o quanto a área de estudo principal do pesquisador se aproxima da área trabalhada na empresa
+    - Flexibilidade: o quanto o pesquisador é variado em temas de suas pesquisas
+    - Experiências: participações em eventos
+    
+    Se a soma dos valores der maior que 2,2 -> gere uma justificativa do porquê o pesquisador se encaixa
 
     """
 
