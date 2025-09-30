@@ -13,7 +13,7 @@ class RelationAnalysis(BaseModel):
     areaEstudo: float = Field(..., description="Score de 0.0 a 1.0 para a afinidade da área de estudo do pesquisador com a empresa.")
     flexibilidade: float = Field(..., description="Score de 0.0 a 1.0 para a variedade de temas de pesquisa do pesquisador.")
     experienciaAcademica: float = Field(..., description="Score de 0.0 a 1.0 para a relevância das experiências (eventos) do pesquisador para a empresa.")
-    justificativa: Optional[str] = Field(default=None, description="Justificativa concisa do porquê o pesquisador se encaixa na empresa.")
+    justificativa: Optional[str] = Field(default=None, description="Justificativa concisa do porquê o pesquisador se encaixa na empresa. Gerar **apenas** se a soma ponderada dos scores for > 3.2.")
 
 def imprimir_relatorio_colorido(resultado: dict):
     """
@@ -39,16 +39,16 @@ def imprimir_relatorio_colorido(resultado: dict):
         return
 
     # --- Relatório de Sucesso ---
-    soma = resultado.get('areaEstudo', 0) + resultado.get('flexibilidade', 0) + resultado.get('experienciaAcademica', 0)
+    soma_ponderada = (resultado.get('areaEstudo', 0) * 2) + resultado.get('flexibilidade', 0) + resultado.get('experienciaAcademica', 0)
     
     print("="*60)
-    print(f"{Cores.BOLD}📊 Análise de Compatibilidade (Score Total: {soma:.2f}) 📊{Cores.RESET}")
+    print(f"{Cores.BOLD}📊 Análise de Compatibilidade (Score Ponderado: {soma_ponderada:.2f}) 📊{Cores.RESET}")
     print(f"  🏢 {Cores.AZUL}Empresa:{Cores.RESET} {resultado['companie_name']}")
     print(f"  👤 {Cores.AZUL}Pesquisador:{Cores.RESET} {resultado['researcher_id']}")
     print("-"*60)
     
     print(f"{Cores.BOLD}Scores:{Cores.RESET}")
-    print(f"  📚 {Cores.AZUL}Área de Estudo:{Cores.RESET} {Cores.VERDE}{resultado['areaEstudo']:.2f}{Cores.RESET}")
+    print(f"  📚 {Cores.AZUL}Área de Estudo (Peso 2):{Cores.RESET} {Cores.VERDE}{resultado['areaEstudo']:.2f}{Cores.RESET}")
     print(f"  💡 {Cores.AZUL}Flexibilidade:{Cores.RESET} {Cores.VERDE}{resultado['flexibilidade']:.2f}{Cores.RESET}")
     print(f"  🎓 {Cores.AZUL}Experiência Acadêmica:{Cores.RESET} {Cores.VERDE}{resultado['experienciaAcademica']:.2f}{Cores.RESET}")
     print("-"*60)
@@ -59,7 +59,7 @@ def imprimir_relatorio_colorido(resultado: dict):
         print(f"   {justificativa}")
     else:
         print(f"❌ {Cores.BOLD}{Cores.AMARELO}Justificativa:{Cores.RESET}")
-        print("   Nenhuma foi gerada (score total <= 2.2).")
+        print("   Nenhuma foi gerada (score ponderado <= 3.2).")
     
     print("="*60 + "\n")
 
@@ -89,8 +89,7 @@ def generate_link_reason(empresa: dict, pesquisador: dict) -> dict: # Adicionado
 
         Instruções:
         1. Com base nos dados, avalie o pesquisador em uma escala de 0.0 a 1.0 para os critérios: areaEstudo, flexibilidade, experienciaAcademica.
-        2. Ignore o próximo passo se a soma dos scores dos critérios for menor que 2,2.
-        3. Gere uma justificativa de texto que:
+        2. Gere uma justificativa de texto que:
            - SEJA TOTALMENTE POSITIVA. Não mencione fraquezas ou pontos a melhorar.
            - SEJA ESPECÍFICA, conectando detalhes do abstract com a descrição da empresa.
         """
@@ -102,9 +101,9 @@ def generate_link_reason(empresa: dict, pesquisador: dict) -> dict: # Adicionado
             response_model=RelationAnalysis,
         )
         
-        soma_scores = analysis_response.areaEstudo + analysis_response.flexibilidade + analysis_response.experienciaAcademica
+        soma_ponderada = (analysis_response.areaEstudo * 2) + analysis_response.flexibilidade + analysis_response.experienciaAcademica
     
-        if soma_scores <= 2.2: analysis_response.justificativa = None
+        if soma_ponderada <= 3.2: analysis_response.justificativa = None
 
         result = {
             "companie_name": empresa['nome_empresa'], # Necessário para buscar pelo id da empresa depois
