@@ -7,7 +7,7 @@ CREATE TYPE "evaluation_criterion_type" AS ENUM (
 
 CREATE TABLE "companies" (
   "id" uuid PRIMARY KEY DEFAULT (gen_random_uuid()),
-  "name" varchar(255) NOT NULL,
+  "name" varchar(255) NOT NULL UNIQUE,
   "embedding" VECTOR(1536),
   "created_at" timestamptz DEFAULT CURRENT_TIMESTAMP,
   "updated_at" timestamptz DEFAULT CURRENT_TIMESTAMP
