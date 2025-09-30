@@ -1,6 +1,7 @@
 import os
 import time
 import json
+import time
 from openai import OpenAI
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
@@ -30,21 +31,10 @@ def generate_link_reason(empresa: dict, pesquisador: dict) -> dict:
     # Retorna de um pesquisador
 
     prompt = f"""
-    Com base na descrição da empresa '{empresa['nome_empresa']}': {empresa['descricao']}
-    
-    Analise o perfil do pesquisador abaixo:
-    - Abstract: {pesquisador['abstract']}
-    - Eventos participados: {pesquisador['event_name']}
-    
-    Siga estas regras estritamente:
-    1. Avalie o pesquisador em uma escala de 0.0 a 1.0 para cada um dos seguintes critérios:
-       - areaEstudo: o quanto a área de estudo principal do pesquisador se aproxima da área da empresa.
-       - flexibilidade: o quanto o pesquisador é variado em temas de suas pesquisas.
-       - experienciaAcademica: o quanto as participações em eventos são relevantes para a empresa.
-    2. Calcule a soma dos três scores.
-    3. Se a soma for MAIOR que 2.2, gere uma justificativa concisa do porquê o pesquisador se encaixa bem na empresa.
-       Caso contrário, o campo 'justificativa' deve ser nulo.
-    """
+        Siga estas regras estritamente:
+        1. Avalie o pesquisador em uma escala de 0.0 a 1.0 para cada critério: areaEstudo, flexibilidade, experienciaAcademica.
+        2. Com base nesses scores, **gere uma justificativa concisa** que explique por que este pesquisador seria (ou não) uma boa escolha para a empresa.
+        """
 
     try:
         analysis_response = client.chat.completions.create(
@@ -52,6 +42,10 @@ def generate_link_reason(empresa: dict, pesquisador: dict) -> dict:
             messages=[{"role": "user", "content": prompt}],
             response_model=RelationAnalysis,
         )
+        
+        soma_scores = analysis_response.areaEstudo + analysis_response.flexibilidade + analysis_response.experienciaAcademica
+    
+        if soma_scores <= 2.2: analysis_response.justificativa = None
 
         result = {
             "companie_name": empresa['nome_empresa'], # Necessário para buscar pelo id da empresa depois
@@ -79,6 +73,7 @@ def reasons_for_companies(empresas: list[dict], pesquisadores: list[dict]) -> li
     total_combinations = len(empresas) * len(pesquisadores)
     current_combination = 0
 
+    tempo_inicial = time.time()
     for empresa in empresas:
         for pesquisador in pesquisadores:
             current_combination += 1
@@ -86,8 +81,10 @@ def reasons_for_companies(empresas: list[dict], pesquisadores: list[dict]) -> li
             
             time.sleep(1) 
             
-            reason = generate_relation_reason(empresa, pesquisador)
+            reason = generate_link_reason(empresa, pesquisador)
             reasons_researchers_for_companies.append(reason)
             print("--- Análise concluída.")
+    tempo_final = time.time()
+    print(f"Duração de gerar relações baseado nos critérios para pesquisadores e empresas: {tempo_final-tempo_inicial:.2f}")
 
     return reasons_researchers_for_companies
