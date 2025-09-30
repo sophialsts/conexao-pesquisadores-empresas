@@ -2,7 +2,7 @@ import { SearchBar } from "@/components/SearchBar";
 
 const HeroEmpresas = () => {
   return (
-    <section className="pt-20 pb-16">
+    <section className="pt-20">
       <div className="container flex flex-col items-center text-center gap-10">
         
         <h1 className="text-4xl font-semibold lg:text-5xl max-w-3xl leading-tight">
@@ -23,7 +23,7 @@ const HeroEmpresas = () => {
 
 const HeroPesquisadores = () => {
   return (
-    <section className="pt-20 pb-16">
+    <section className="pt-20">
       <div className="container flex flex-col items-center text-center gap-10">
         
         <h1 className="text-4xl font-semibold lg:text-5xl max-w-3xl leading-tight">
