@@ -7,10 +7,10 @@ const CardPesquisador = ({nome, instituicao, url}:{
 }) => {
     return (
         <div className="cursor-pointer h-80 w-60 rounded border border-border hover:bg-card-selection hover:shadow-sm bg-white py-6 flex flex-col items-center transition-all">
-            <div className="bg-neutral-100 border border-border rounded h-36 aspect-square flex justify-center items-center">
+            <div className="overflow-hidden relative bg-neutral-100 border border-border rounded h-36 aspect-square flex justify-center items-center">
                 {!url && <User className="text-neutral-600" size={"96"}/>}
                 {url && 
-                <Image alt="" src={url} fill={true}/>
+                <Image alt="" src={url} fill={true} className="object-cover" unoptimized={true}/>
                 }
             </div>
             <div className="flex flex-col w-full px-8 pt-1">
