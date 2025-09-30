@@ -4,3 +4,4 @@ langchain-community>=0.0.20
 langchain-core>=0.1.0
 langchain-openai>=0.0.8
 psycopg2-binary>=2.9.9
+pydantic==2.7.1

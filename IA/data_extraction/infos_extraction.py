@@ -72,4 +72,4 @@ def obter_empresas():
     
     return lista_dict_empresas
 
-obter_pesquisadores()
+# obter_pesquisadores()
