@@ -132,7 +132,9 @@ def reasons_for_companies(empresas: list[dict], pesquisadores: list[dict]) -> li
     current_combination = 0
 
     tempo_inicial = time.time()
+    i = 1
     for empresa in empresas:
+        if i == 2: break
         for pesquisador in pesquisadores:
             current_combination += 1
             print(f"Analisando combinação {current_combination}/{total_combinations}: Empresa '{empresa['nome_empresa']}' e Pesquisador '{pesquisador['researcher_id']}'")
@@ -143,6 +145,7 @@ def reasons_for_companies(empresas: list[dict], pesquisadores: list[dict]) -> li
             reasons_researchers_for_companies.append(reason)
             imprimir_relatorio_colorido(reason)
             print("--- Análise concluída.")
+        i+=1
     tempo_final = time.time()
     print(f"Duração de gerar relações baseado nos critérios para pesquisadores e empresas: {tempo_final-tempo_inicial:.2f}")
 

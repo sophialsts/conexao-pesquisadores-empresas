@@ -1,8 +1,7 @@
 CREATE TYPE "evaluation_criterion_type" AS ENUM (
-  'research_alignment',
-  'innovation_potential',
-  'cultural_fit',
-  'relevant_experience'
+  'areaEstudo',
+  'flexibilidade',
+  'experienciaAcademica'
 );
 
 CREATE TABLE "companies" (

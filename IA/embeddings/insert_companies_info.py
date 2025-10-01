@@ -12,17 +12,18 @@ if projeto_raiz not in sys.path:
 
 from data_extraction.infos_extraction import obter_empresas
 
-def inserir_nomes_e_embeddings_empresas():
-    try:
-        load_dotenv()
+def inserir_nomes_e_embeddings_empresas(db_config: dict):
+    """
+    Insere nomes de empresas e seus embeddings no banco de dados.
 
-        usuario = os.getenv('DB_USER')
-        senha = os.getenv('DB_SENHA')
-        host = 'localhost'
-        porta = os.getenv('DB_PORT')
-        banco = os.getenv('DB_NAME')
-        
-        connection_string = f'postgresql+psycopg2://{usuario}:{senha}@{host}:{porta}/{banco}'
+    :param db_config: Dicionário com as credenciais do banco.
+                      Ex: {'user': 'postgres', 'password': '...', 'host': 'localhost', ...}
+    """
+    try:
+        connection_string = (
+            f"postgresql+psycopg2://{db_config['user']}:{db_config['password']}"
+            f"@{db_config['host']}:{db_config['port']}/{db_config['dbname']}"
+        )
         engine = create_engine(connection_string)
 
         sql = text("""
@@ -31,28 +32,34 @@ def inserir_nomes_e_embeddings_empresas():
             ON CONFLICT (name) DO NOTHING
         """)
         
+        print("Buscando empresas e gerando embeddings...")
         empresas = obter_empresas()
         embeddings_model = OpenAIEmbeddings()
 
-        dados = []
+        dados_para_inserir = []
         for empresa in empresas:
             try:
                 nome = empresa['nome_empresa']
                 embedding_nome = embeddings_model.embed_query(nome)
-                dados.append({"name": nome, "embedding": embedding_nome})
+                dados_para_inserir.append({"name": nome, "embedding": np.array(embedding_nome).tolist()})
             except Exception as e:
-                print("\n\033[91mOcorreu um erro ao gerar os embeddings.\033[0m")
-                print(f"Empresa: {empresa}")
+                print(f"\n\033[91mOcorreu um erro ao gerar embedding para a empresa: {empresa.get('nome_empresa', 'N/A')}\033[0m")
                 print(f"Erro: {e}")
         
+        if not dados_para_inserir:
+            print("Nenhum dado válido para inserir. Operação encerrada.")
+            return
+
+        print(f"Inserindo {len(dados_para_inserir)} registros no banco de dados...")
         with engine.begin() as conn:
-            for d in dados:
-                conn.execute(sql, d)
+            conn.execute(sql, dados_para_inserir)
     
         print("✅ Operação de inserção de nomes das empresas e embeddings concluída com sucesso!")
 
+    except KeyError as e:
+        print(f"\033[91mErro de configuração: A chave {e} está faltando no dicionário db_config.\033[0m")
     except Exception as e:
-        print(f"Ocorreu um erro ao inserir os dados: {e}")
+        print(f"\033[91mOcorreu um erro ao inserir os dados: {e}\033[0m")
 
 
-inserir_nomes_e_embeddings_empresas() # Colocar no main dps
+#inserir_nomes_e_embeddings_empresas() # Colocar no main dps

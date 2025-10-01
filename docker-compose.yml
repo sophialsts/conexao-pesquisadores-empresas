@@ -9,14 +9,14 @@ services:
     ports:
       - "${DB_PORT}:${DB_PORT}"
     container_name: ${DB_NOME_CONTAINER}
-  front:
-    build:
-      context: ./front
-      dockerfile: front.dockerfile
-      target: prod
-    image: ${FRONT_NOME_IMAGEM}
-    container_name: ${FRONT_NOME_CONTAINER}
-    ports:
-      - "${FRONT_PORT}:3000"
+  #front:
+    #build:
+    #  context: ./front
+    #  dockerfile: front.dockerfile
+    #  target: prod
+    #image: ${FRONT_NOME_IMAGEM}
+    #container_name: ${FRONT_NOME_CONTAINER}
+    #ports:
+    #  - "${FRONT_PORT}:3000"
 volumes:
   pgdata:
