@@ -10,17 +10,30 @@ services:
     ports:
       - "${DB_PORT}:${DB_PORT}"
     container_name: ${DB_NOME_CONTAINER}
-  #front:
-  #  build:
-  #    context: ./front
-  #    dockerfile: front.dockerfile
-  #    target: dev
-  #  image: ${FRONT_NOME_IMAGEM}
-  #  container_name: ${FRONT_NOME_CONTAINER}
-  #  ports:
-  #  - "${FRONT_PORT}:3000"
-  #  volumes:
-  #    - ./front:/usr/src/app
-  #    - /usr/src/app/node_modules
+  front:
+    build:
+      context: ./front
+      dockerfile: front.dockerfile
+      target: dev
+    image: ${FRONT_NOME_IMAGEM}
+    container_name: ${FRONT_NOME_CONTAINER}
+    ports:
+      - "${FRONT_PORT}:3000"
+    volumes:
+      - ./front:/usr/src/app
+      - /usr/src/app/node_modules
+  back:
+    build:
+      context: ./back
+      dockerfile: back.dockerfile
+      target: dev
+    image: ${BACK_NOME_IMAGEM}
+    container_name: ${BACK_NOME_CONTAINER}
+    ports:
+      - "${BACK_PORT}:5000"
+    volumes:
+      - ./back:/usr/src/app
+      - /usr/src/app/node_modules
+
 volumes:
   pgdata:
