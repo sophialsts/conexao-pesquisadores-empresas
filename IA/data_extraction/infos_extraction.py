@@ -55,7 +55,9 @@ def obter_empresas():
         with open(caminho_arquivo, 'r', encoding='utf-8') as arquivo:
             leitor = csv.DictReader(arquivo)
             
+            i=0
             for linha in leitor:
+                if i >= 50: break
                 descricao = linha.get('descricao', '')
                 nomes_empresas = linha.get('nome', '')
                 área = linha.get('area', '')
@@ -65,6 +67,7 @@ def obter_empresas():
                     "area": área
                 }
                 lista_dict_empresas.append(dict_empresa)
+                i+=1
             
             print(f"Total de dicionários de empresas extraídas: {len(lista_dict_empresas)}")
             

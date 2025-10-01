@@ -1,9 +1,9 @@
 import os
 from dotenv import load_dotenv
 
-#from data_extraction.infos_extraction import obter_pesquisadores, obter_empresas
-#from link_researchers_to_companies.semantic_relational import reasons_for_companies
-#from link_researchers_to_companies.include_researchers_evaluations import include_data
+from data_extraction.infos_extraction import obter_pesquisadores, obter_empresas
+from link_researchers_to_companies.semantic_relational import reasons_for_companies
+from link_researchers_to_companies.include_researchers_evaluations import processar_e_inserir_avaliacoes
 from embeddings.insert_companies_info import inserir_nomes_e_embeddings_empresas
 
 def main():
@@ -32,7 +32,7 @@ def main():
     inserir_nomes_e_embeddings_empresas(db_config)
 
     # 3. Relacionamento Semântico
-    '''print("\nEtapa 2: Relacionando pesquisadores e empresas...")
+    print("\nEtapa 2: Relacionando pesquisadores e empresas...")
     pesquisadores = obter_pesquisadores()
     empresas = obter_empresas()
     empresas_pesquisadores_relacoes = reasons_for_companies(empresas, pesquisadores)
@@ -43,7 +43,7 @@ def main():
     if empresas_pesquisadores_relacoes:
         processar_e_inserir_avaliacoes(empresas_pesquisadores_relacoes, db_config)
     else:
-        print("Nenhuma relação encontrada para inserir.")'''
+        print("Nenhuma relação encontrada para inserir.")
 
     print("\n🎉 Processo finalizado!")
 

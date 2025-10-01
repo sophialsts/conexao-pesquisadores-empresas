@@ -1,51 +1,67 @@
-import os
-import sys
-import numpy as np
-from langchain_openai import OpenAIEmbeddings
-from sqlalchemy import create_engine, text
-from dotenv import load_dotenv
+import psycopg2
 
-def include_data():
-    try:
-        load_dotenv()
+def _buscar_mapeamento_empresas(conexao):
+    """Função auxiliar para buscar um mapa de nome_empresa -> id."""
+    company_map = {}
+    with conexao.cursor() as cursor:
+        cursor.execute("SELECT id, name FROM companies")
+        for company_id, company_name in cursor:
+            company_map[company_name] = company_id
+    return company_map
 
-        usuario = os.getenv('DB_USER')
-        senha = os.getenv('DB_SENHA')
-        host = 'localhost'
-        porta = os.getenv('DB_PORT')
-        banco = os.getenv('DB_NAME')
-        
-        connection_string = f'postgresql+psycopg2://{usuario}:{senha}@{host}:{porta}/{banco}'
-        engine = create_engine(connection_string)
-
-        sql = text("""
-            INSERT INTO companies (name, embedding)
-            VALUES (:name, :embedding)
-            ON CONFLICT (name) DO NOTHING
-        """)
-        
-        empresas = obter_empresas()
-        embeddings_model = OpenAIEmbeddings()
-
-        dados = []
-        for empresa in empresas:
-            try:
-                nome = empresa['nome_empresa']
-                embedding_nome = embeddings_model.embed_query(nome)
-                dados.append({"name": nome, "embedding": embedding_nome})
-            except Exception as e:
-                print("\n\033[91mOcorreu um erro ao gerar os embeddings.\033[0m")
-                print(f"Empresa: {empresa}")
-                print(f"Erro: {e}")
-        
-        with engine.begin() as conn:
-            for d in dados:
-                conn.execute(sql, d)
+def processar_e_inserir_avaliacoes(dados_avaliacoes: list, db_config: dict):
+    """
+    Processa uma lista de avaliações, transforma os dados e os insere na tabela
+    'researcher_evaluations_by_company'.
+    """
+    # Defina aqui os nomes exatos das chaves que representam um critério
+    CRITERIOS_A_PROCESSAR = ['areaEstudo', 'flexibilidade', 'experienciaAcademica']
     
-        print("✅ Operação de inserção de nomes das empresas e embeddings concluída com sucesso!")
+    dados_para_inserir = []
+    conexao = None
+
+    try:
+        conexao = psycopg2.connect(**db_config)
+        
+        company_id_map = _buscar_mapeamento_empresas(conexao)
+
+        for avaliacao in dados_avaliacoes:
+            company_name = avaliacao.get("companie_name")
+            researcher_id = avaliacao.get("researcher_id")
+            
+            # Pula o registro se o nome da empresa não estiver no banco
+            company_id = company_id_map.get(company_name)
+            if not company_id:
+                print(f"Aviso: Empresa '{company_name}' não encontrada no banco. Pulando registro.")
+                continue
+
+            # Transforma uma avaliação em múltiplas linhas (uma por critério)
+            for criterio in CRITERIOS_A_PROCESSAR:
+                if criterio in avaliacao:
+                    valor = avaliacao[criterio]
+                    linha_formatada = (researcher_id, company_id, criterio, valor)
+                    dados_para_inserir.append(linha_formatada)
+        
+        if dados_para_inserir:
+            with conexao.cursor() as cursor:
+                sql_insert = """
+                    INSERT INTO researcher_evaluations_by_company 
+                    (researcher_id, company_id, criterion_name, criterion_value) 
+                    VALUES (%s, %s, %s, %s)
+                """
+                from psycopg2.extras import execute_batch
+                execute_batch(cursor, sql_insert, dados_para_inserir)
+                
+            conexao.commit()
+            print(f"✅ Sucesso! {len(dados_para_inserir)} registros de avaliação inseridos.")
+        else:
+            print("ℹ️ Nenhuma avaliação válida para inserir.")
 
     except Exception as e:
-        print(f"Ocorreu um erro ao inserir os dados: {e}")
-
-
-inserir_nomes_e_embeddings_empresas() # Colocar no main dps
+        print(f"🚨 Erro no processamento de avaliações: {e}")
+        if conexao:
+            conexao.rollback()
+    
+    finally:
+        if conexao:
+            conexao.close()
