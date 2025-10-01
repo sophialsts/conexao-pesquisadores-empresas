@@ -13,6 +13,14 @@ CREATE TABLE "companies" (
   "updated_at" timestamptz DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE "researchers" (
+  "researcher_id" uuid PRIMARY KEY,
+  "name" VARCHAR(255) NOT NULL UNIQUE,
+  "embedding" VECTOR(1536),
+  "created_at" timestamptz DEFAULT CURRENT_TIMESTAMP,
+  "updated_at" timestamptz DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE "embedding_curriculos" (
   "researcher_id" uuid PRIMARY KEY,
   "abstract_embeddings" VECTOR(1536),
