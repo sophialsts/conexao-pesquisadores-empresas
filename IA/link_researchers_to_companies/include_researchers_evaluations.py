@@ -5,7 +5,7 @@ from langchain_openai import OpenAIEmbeddings
 from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 
-def inserir_nomes_e_embeddings_empresas():
+def include_data():
     try:
         load_dotenv()
 

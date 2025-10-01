@@ -1,10 +1,10 @@
 import os
 from dotenv import load_dotenv
 
-from data_extraction.infos_extraction import obter_pesquisadores, obter_empresas
-from link_researchers_to_companies.semantic_relational import reasons_for_companies
-from link_researchers_to_companies.include_researchers_evaluations import reasons_for_companies
-from embeddings.insert_companies_info import inserir_nome_e_embeddings_empresas
+#from data_extraction.infos_extraction import obter_pesquisadores, obter_empresas
+#from link_researchers_to_companies.semantic_relational import reasons_for_companies
+#from link_researchers_to_companies.include_researchers_evaluations import include_data
+from embeddings.insert_companies_info import inserir_nomes_e_embeddings_empresas
 
 def main():
     """
@@ -29,7 +29,7 @@ def main():
 
     # 2. Inserção de Empresas e Embeddings
     print("\nEtapa 1: Inserindo empresas no banco de dados...")
-    inserir_nome_e_embeddings_empresas(db_config)
+    inserir_nomes_e_embeddings_empresas(db_config)
 
     # 3. Relacionamento Semântico
     '''print("\nEtapa 2: Relacionando pesquisadores e empresas...")
