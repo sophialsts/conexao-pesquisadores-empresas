@@ -12,6 +12,7 @@ export type RecommendedResearcher = {
     id: string,
     name: string,
     criteria: RecommendationCriterion[]
+    recomendationReason: string | null
 }
 
 export type ResearcherSortBy = 
