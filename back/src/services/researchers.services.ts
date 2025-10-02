@@ -11,22 +11,34 @@ const getResearchers = async (limit:number = 10): Promise<Researcher[]> => {
     });
 }
 
-const getResearchersBySimilarity = async (searchText:string, limit:number = 10): Promise<Researcher[]> => {
-    const queryEmbedding = await getEmbedding(searchText);
+const getResearchersBySimilarity = async (
+  searchText: string,
+  limit: number = 10
+): Promise<Researcher[]> => {
+  
+  if (!searchText?.trim()) {
+    return [];
+  }
+  
+  const processedQuery = searchText
+    .trim()
+    .split(/\s+/)
+    .join(' & ') + ':*';
 
-    const vectorQuery = `[${queryEmbedding.join(',')}]`;
-
-    const results = await prisma.$queryRaw<Researcher[]>`
-        SELECT
-        researcher_id,
-        name
-        FROM
-        researchers
-        ORDER BY
-        embedding <=> ${vectorQuery}::vector ASC
-        LIMIT
-        ${limit};
-    `;
+  const results = await prisma.$queryRaw<Researcher[]>`
+    SELECT
+      researcher_id,
+      name
+    FROM
+      researchers,
+      to_tsquery('public.portuguese_unaccent', ${processedQuery}) query
+    WHERE
+      tsv @@ query
+    ORDER BY
+      ts_rank(tsv, query) DESC
+    LIMIT
+      ${limit};
+  `;
 
   return results;
 }
@@ -44,7 +56,7 @@ async function getRecommendedResearchersForCompany(
   companyId: string, sortBy: ResearcherSortBy = 'average'
 ): Promise<RecommendedResearcher[]> {
 
- let orderByClause: Prisma.Sql;
+  let orderByClause: Prisma.Sql;
 
   switch (sortBy) {
     case 'research_alignment':
@@ -74,7 +86,9 @@ async function getRecommendedResearchersForCompany(
           'criterionName', eval.criterion_name,
           'value', eval.criterion_value
         )
-      ) AS criteria
+      ) AS criteria,
+      MAX(eval.recommendation_reason) as "recommendationReason"
+      
     FROM
       researcher_evaluations_by_company AS eval
     JOIN
@@ -91,6 +105,5 @@ async function getRecommendedResearchersForCompany(
 
   return results;
 }
-
 
 export { getResearchers, getResearchersBySimilarity, getResearcherById, getRecommendedResearchersForCompany };

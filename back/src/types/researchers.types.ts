@@ -14,7 +14,8 @@ export type RecommendationCriterion = {
 export type RecommendedResearcher = {
     id: string,
     name: string,
-    criteria: RecommendationCriterion[]
+    criteria: RecommendationCriterion[],
+    recommendationReason: string | null
 }
 
 export type ResearcherSortBy = 'average' | evaluation_criterion_type;
