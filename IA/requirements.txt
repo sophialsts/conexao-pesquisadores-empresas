@@ -6,3 +6,4 @@ langchain-openai>=0.0.8
 psycopg2-binary>=2.9.9
 pydantic==2.7.0
 instructor==1.2.2
+python-dotenv>=1.0.0
