@@ -30,11 +30,17 @@ def obter_pesquisadores():
             for linha in leitor:
                 abstract = linha.get('abstract', '')
                 id_pesquisador = linha.get('researcher_id', '')
+                nome_pesquisador = linha.get('researcher_name', '')
                 nome_evento = linha.get('event_name', '')
+                instituicao = linha.get('instituicao', '')
+                sigla = linha.get('sigla', '')
                 dict_pesquisador = {
                     "researcher_id": id_pesquisador,
+                    "researcher_name": nome_pesquisador,
                     "abstract": abstract,
-                    "event_name": nome_evento
+                    "event_name": nome_evento,
+                    "instituicao": instituicao,
+                    "sigla": sigla
                 }
                 lista_dicts_pesquisadores.append(dict_pesquisador)
             
@@ -55,7 +61,9 @@ def obter_empresas():
         with open(caminho_arquivo, 'r', encoding='utf-8') as arquivo:
             leitor = csv.DictReader(arquivo)
             
+            i=0
             for linha in leitor:
+                if i >= 10: break
                 descricao = linha.get('descricao', '')
                 nomes_empresas = linha.get('nome', '')
                 área = linha.get('area', '')
@@ -65,6 +73,7 @@ def obter_empresas():
                     "area": área
                 }
                 lista_dict_empresas.append(dict_empresa)
+                i+=1
             
             print(f"Total de dicionários de empresas extraídas: {len(lista_dict_empresas)}")
             

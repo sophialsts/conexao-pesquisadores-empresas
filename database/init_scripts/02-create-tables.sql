@@ -1,8 +1,7 @@
 CREATE TYPE "evaluation_criterion_type" AS ENUM (
-  'research_alignment',
-  'innovation_potential',
-  'cultural_fit',
-  'relevant_experience'
+  'areaEstudo',
+  'flexibilidade',
+  'experienciaAcademica'
 );
 
 CREATE TABLE "companies" (
@@ -13,17 +12,13 @@ CREATE TABLE "companies" (
   "updated_at" timestamptz DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE "embedding_curriculos" (
+CREATE TABLE "researchers" (
   "researcher_id" uuid PRIMARY KEY,
-  "abstract_embeddings" VECTOR(1536),
-  "articles_embeddings" VECTOR(1536),
-  "project_name_embeddings" VECTOR(1536),
-  "description_project_embeddings" VECTOR(1536),
-  "great_area_embeddings" VECTOR(1536),
-  "area_specialty_embeddings" VECTOR(1536),
-  "patent_embeddings" VECTOR(1536),
-  "book_chapter_embeddings" VECTOR(1536),
-  "event_name_embeddings" VECTOR(1536),
+  "name" VARCHAR(255) NOT NULL UNIQUE,
+  "embedding" VECTOR(1536),
+  "abstract" TEXT,
+  "instituicao" VARCHAR(150),
+  "sigla" VARCHAR(15),
   "created_at" timestamptz DEFAULT CURRENT_TIMESTAMP,
   "updated_at" timestamptz DEFAULT CURRENT_TIMESTAMP
 );
@@ -31,6 +26,7 @@ CREATE TABLE "embedding_curriculos" (
 CREATE TABLE "company_recommendations_for_researchers" (
   "researcher_id" uuid NOT NULL,
   "company_id" uuid NOT NULL,
+  "company_name" varchar(255),
   "area" varchar(255),
   "recommendation_reason" text,
   "created_at" timestamptz DEFAULT CURRENT_TIMESTAMP,
@@ -43,7 +39,7 @@ CREATE TABLE "researcher_evaluations_by_company" (
   "company_id" uuid NOT NULL,
   "criterion_name" evaluation_criterion_type NOT NULL,
   "criterion_value" real NOT NULL,
-  "criterion_text" text,
+  "recommendation_reason" text,
   "created_at" timestamptz DEFAULT CURRENT_TIMESTAMP,
   "updated_at" timestamptz DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY ("researcher_id", "company_id", "criterion_name")
@@ -51,15 +47,7 @@ CREATE TABLE "researcher_evaluations_by_company" (
 
 COMMENT ON COLUMN "companies"."embedding" IS 'Requires the pgvector extension in PostgreSQL';
 
-COMMENT ON COLUMN "company_recommendations_for_researchers"."researcher_id" IS 'References embedding_curriculos.researcher_id';
-
-COMMENT ON COLUMN "researcher_evaluations_by_company"."researcher_id" IS 'References embedding_curriculos.researcher_id';
-
 COMMENT ON COLUMN "researcher_evaluations_by_company"."criterion_value" IS 'Value must be between 0.0 and 1.0';
-
-ALTER TABLE "company_recommendations_for_researchers" ADD FOREIGN KEY ("researcher_id") REFERENCES "embedding_curriculos" ("researcher_id") ON DELETE CASCADE;
-
-ALTER TABLE "researcher_evaluations_by_company" ADD FOREIGN KEY ("researcher_id") REFERENCES "embedding_curriculos" ("researcher_id") ON DELETE CASCADE;
 
 ALTER TABLE "company_recommendations_for_researchers" ADD FOREIGN KEY ("company_id") REFERENCES "companies" ("id") ON DELETE CASCADE;
 

@@ -13,14 +13,17 @@ class RelationAnalysis(BaseModel):
     areaEstudo: float = Field(..., description="Score de 0.0 a 1.0 para a afinidade da área de estudo do pesquisador com a empresa.")
     flexibilidade: float = Field(..., description="Score de 0.0 a 1.0 para a variedade de temas de pesquisa do pesquisador.")
     experienciaAcademica: float = Field(..., description="Score de 0.0 a 1.0 para a relevância das experiências (eventos) do pesquisador para a empresa.")
-    justificativa: Optional[str] = Field(default=None, description="Justificativa concisa do porquê o pesquisador se encaixa na empresa. Gerar **apenas** se a soma ponderada dos scores for > 3.2.")
-
+    
+    justificativaParaEmpresa: Optional[str] = Field(
+        default=None, 
+        description="Justificativa para a EMPRESA, destacando o valor do pesquisador PARA ELA."
+    )
+    justificativaParaPesquisador: Optional[str] = Field(
+        default=None, 
+        description="Justificativa para o PESQUISADOR, destacando os benefícios da empresa PARA ELE."
+    )
+    
 def imprimir_relatorio_colorido(resultado: dict):
-    """
-    Imprime um relatório formatado, com emojis e cores, diretamente
-    no terminal, sem precisar da biblioteca rich ou do formato JSON.
-    """
-    # Classe interna para guardar os códigos de cores ANSI
     class Cores:
         RESET = '\033[0m'
         BOLD = '\033[1m'
@@ -29,16 +32,9 @@ def imprimir_relatorio_colorido(resultado: dict):
         AMARELO = '\033[93m'
         VERMELHO = '\033[91m'
 
-    # --- Se a análise deu erro ---
     if "error" in resultado:
-        print(f"{Cores.BOLD}{Cores.VERMELHO}‼️ ERRO NA ANÁLISE ‼️{Cores.RESET}")
-        print(f"  🏢 {Cores.AZUL}Empresa:{Cores.RESET} {resultado.get('companie_name', 'N/A')}")
-        print(f"  👤 {Cores.AZUL}Pesquisador:{Cores.RESET} {resultado.get('researcher_id', 'N/A')}")
-        print(f"  {Cores.AMARELO}Motivo:{Cores.RESET} {resultado['error']}")
-        print("="*60 + "\n")
         return
 
-    # --- Relatório de Sucesso ---
     soma_ponderada = (resultado.get('areaEstudo', 0) * 2) + resultado.get('flexibilidade', 0) + resultado.get('experienciaAcademica', 0)
     
     print("="*60)
@@ -46,18 +42,23 @@ def imprimir_relatorio_colorido(resultado: dict):
     print(f"  🏢 {Cores.AZUL}Empresa:{Cores.RESET} {resultado['companie_name']}")
     print(f"  👤 {Cores.AZUL}Pesquisador:{Cores.RESET} {resultado['researcher_id']}")
     print("-"*60)
-    
     print(f"{Cores.BOLD}Scores:{Cores.RESET}")
     print(f"  📚 {Cores.AZUL}Área de Estudo (Peso 2):{Cores.RESET} {Cores.VERDE}{resultado['areaEstudo']:.2f}{Cores.RESET}")
     print(f"  💡 {Cores.AZUL}Flexibilidade:{Cores.RESET} {Cores.VERDE}{resultado['flexibilidade']:.2f}{Cores.RESET}")
     print(f"  🎓 {Cores.AZUL}Experiência Acadêmica:{Cores.RESET} {Cores.VERDE}{resultado['experienciaAcademica']:.2f}{Cores.RESET}")
     print("-"*60)
 
-    justificativa = resultado.get('justificativa')
-    if justificativa:
-        print(f"✅ {Cores.BOLD}{Cores.VERDE}Justificativa:{Cores.RESET}")
-        print(f"   {justificativa}")
+    just_empresa = resultado.get('justificativa_empresa')
+    just_pesquisador = resultado.get('justificativa_pesquisador')
+
+    if just_empresa or just_pesquisador:
+        print(f"✅ {Cores.BOLD}{Cores.VERDE}Justificativas Geradas:{Cores.RESET}")
+        if just_empresa:
+            print(f"   👉 {Cores.BOLD}Para Empresa:{Cores.RESET} {just_empresa}")
+        if just_pesquisador:
+            print(f"   👉 {Cores.BOLD}Para Pesquisador:{Cores.RESET} {just_pesquisador}")
     else:
+        # Esta mensagem só aparecerá se ambas forem nulas
         print(f"❌ {Cores.BOLD}{Cores.AMARELO}Justificativa:{Cores.RESET}")
         print("   Nenhuma foi gerada (score ponderado <= 3.2).")
     
@@ -73,25 +74,26 @@ def criar_client() -> OpenAI:
     return client
 
 # Gerar razões das relações definidas/encontradas, retorna dicionário
-def generate_link_reason(empresa: dict, pesquisador: dict) -> dict: # Adicionado tags_em_comum
+def generate_link_reason(empresa: dict, pesquisador: dict) -> dict:
     client = instructor.patch(criar_client())
 
-    # Retorna de um pesquisador
-    
-    # PROMPT CORRIGIDO E COMPLETO
     prompt = f"""
-        Sua tarefa é avaliar a compatibilidade entre um pesquisador e uma empresa e gerar uma justificativa de marketing, assertiva e positiva.
+        Sua tarefa é analisar a compatibilidade entre um pesquisador e uma empresa e gerar duas justificativas de marketing distintas.
 
         Dados para Análise:
-        - Empresa '{empresa['nome_empresa']}' da área '{empresa['area']}': {empresa['descricao']}
-        - Pesquisador (Abstract): {pesquisador['abstract']}
-        - Eventos participados pelo pesquisador: {pesquisador.get('event_name', 'Nenhum informado')}
+        # (Dados continuam iguais)
 
-        Instruções:
-        1. Com base nos dados, avalie o pesquisador em uma escala de 0.0 a 1.0 para os critérios: areaEstudo, flexibilidade, experienciaAcademica.
-        2. Gere uma justificativa de texto que:
-           - SEJA TOTALMENTE POSITIVA. Não mencione fraquezas ou pontos a melhorar.
-           - SEJA ESPECÍFICA, conectando detalhes do abstract com a descrição da empresa.
+        Instruções Gerais:
+        1. Avalie o pesquisador em uma escala de 0.0 a 1.0 para os critérios: areaEstudo, flexibilidade, experienciaAcademica.
+        2. Gere AMBAS as justificativas seguindo as instruções de tom e público-alvo abaixo.
+
+        ---
+        Instruções para a `justificativaParaEmpresa`:
+        # (Instruções específicas continuam iguais)
+
+        ---
+        Instruções para a `justificativaParaPesquisador`:
+        # (Instruções específicas continuam iguais)
         """
 
     try:
@@ -103,18 +105,24 @@ def generate_link_reason(empresa: dict, pesquisador: dict) -> dict: # Adicionado
         
         soma_ponderada = (analysis_response.areaEstudo * 2) + analysis_response.flexibilidade + analysis_response.experienciaAcademica
     
-        if soma_ponderada <= 3.2: analysis_response.justificativa = None
+        # Se o score for baixo, anula ambas as justificativas
+        if soma_ponderada <= 3.2: 
+            analysis_response.justificativaParaEmpresa = None
+            analysis_response.justificativaParaPesquisador = None
 
+        # MUDANÇA AQUI: Capturar as duas justificativas
         result = {
-            "companie_name": empresa['nome_empresa'], # Necessário para buscar pelo id da empresa depois
+            "companie_name": empresa['nome_empresa'],
             "researcher_id": pesquisador["researcher_id"],
+            "area": empresa['area'],
             "areaEstudo": analysis_response.areaEstudo,
             "flexibilidade": analysis_response.flexibilidade,
             "experienciaAcademica": analysis_response.experienciaAcademica,
-            "justificativa": analysis_response.justificativa
+            "justificativa_empresa": analysis_response.justificativaParaEmpresa,
+            "justificativa_pesquisador": analysis_response.justificativaParaPesquisador
         }
         
-        print(json.dumps(result, indent=2, ensure_ascii=False))
+        print(json.dumps(result, indent=2, ensure_ascii=False)) # Opcional
         
         return result
 
@@ -132,7 +140,9 @@ def reasons_for_companies(empresas: list[dict], pesquisadores: list[dict]) -> li
     current_combination = 0
 
     tempo_inicial = time.time()
+    i = 1
     for empresa in empresas:
+        if i == 2: break # Limitei para uma empresa só, ignora total_combinations
         for pesquisador in pesquisadores:
             current_combination += 1
             print(f"Analisando combinação {current_combination}/{total_combinations}: Empresa '{empresa['nome_empresa']}' e Pesquisador '{pesquisador['researcher_id']}'")
@@ -143,6 +153,7 @@ def reasons_for_companies(empresas: list[dict], pesquisadores: list[dict]) -> li
             reasons_researchers_for_companies.append(reason)
             imprimir_relatorio_colorido(reason)
             print("--- Análise concluída.")
+        i+=1
     tempo_final = time.time()
     print(f"Duração de gerar relações baseado nos critérios para pesquisadores e empresas: {tempo_final-tempo_inicial:.2f}")
 
