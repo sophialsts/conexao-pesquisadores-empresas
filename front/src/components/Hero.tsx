@@ -1,4 +1,4 @@
-import { SearchBar } from "@/components/SearchBar";
+import { SearchBarEmpresas, SearchBarPesquisadores } from "@/components/SearchBar";
 import { EmpresasSugeridas } from "@/components/EmpresasSugeridas";
 
 const HeroEmpresas = () => {
@@ -15,7 +15,7 @@ const HeroEmpresas = () => {
         </h1>
 
         <div className="w-full max-w-5xl">
-          <SearchBar placeholder="Pesquise sua empresa" />
+          <SearchBarEmpresas placeholder="Pesquise sua empresa" />
           <EmpresasSugeridas/>
         </div>
       </div>
@@ -37,7 +37,7 @@ const HeroPesquisadores = () => {
         </h1>
 
         <div className="w-full max-w-5xl">
-          <SearchBar placeholder="Pesquise seu nome"/>
+          <SearchBarPesquisadores placeholder="Pesquise seu nome"/>
         </div>
       </div>
     </section>

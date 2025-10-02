@@ -3,26 +3,48 @@
 import { User } from "lucide-react";
 import { DrawerTrigger } from "@/components/ui/drawer";
 import Image from "next/image";
+import { RecommendedResearcher, Researcher } from "@/types/researchers.types";
+import { useEffect, useState } from "react";
 
-const CardPesquisador = ({nome, instituicao, url}:{
-    nome: string,
+const CardPesquisador = ({pesquisador, instituicao, onClick}:{
+    pesquisador: Researcher,
     instituicao: string,
     url?:string,
+    onClick?: (pesquisador: Researcher) => void;
 }) => {
+    const [imageError, setImageError] = useState(false);
 
+    const url = `https://simcc.uesc.br/v3/api/ResearcherData/Image?researcher_id=${pesquisador.id}`;
+    useEffect(() => {
+        setImageError(false);
+    }, [pesquisador.id]);
+
+     const handleCardClick = () => {
+        if (onClick) {
+            onClick(pesquisador);
+        }
+    };
     return (
         <DrawerTrigger asChild>
-            <div className="cursor-pointer h-80 w-60 rounded border border-border hover:bg-card-selection hover:shadow-sm bg-white py-6 flex flex-col items-center transition-all">
+            <div onClick={handleCardClick} className="cursor-pointer h-80 w-60 rounded border border-border hover:bg-card-selection hover:shadow-sm bg-white py-6 flex flex-col items-center transition-all">
                 <div className="overflow-hidden relative bg-neutral-100 border border-border rounded h-36 aspect-square flex justify-center items-center">
-                    {!url && <User className="text-neutral-600" size={"96"}/>}
-                    {url && 
-                    <Image alt="" src={url} fill={true} className="object-cover" unoptimized={true}/>
-                    }
+                     {(imageError || !url) && <User className="text-neutral-600" size={"96"}/>}
+
+                        {url && !imageError && 
+                            <Image 
+                                alt={`Foto de ${pesquisador.name}`} 
+                                src={url} 
+                                fill={true} 
+                                className="object-cover" 
+                                unoptimized={true}
+                                onError={() => setImageError(true)}
+                            />
+                        }
                 </div>
                 <div className="flex flex-col w-full px-8 pt-1">
                     <div className="min-h-[2.5rem] flex items-end">
                     <p className="text-sm font-medium leading-tight line-clamp-2">
-                        {nome}
+                        {pesquisador.name}
                     </p>
                     </div>
 
@@ -37,25 +59,46 @@ const CardPesquisador = ({nome, instituicao, url}:{
     );
 }
 
-const CardPesquisadorEmpresa = ({nome, instituicao, url}:{
-    nome: string,
+const CardPesquisadorEmpresa = ({pesquisador, instituicao, onClick}:{
+    pesquisador: RecommendedResearcher,
     instituicao: string,
-    url?:string,
+    onClick?: (pesquisador: RecommendedResearcher) => void;
 }) => {
+    const [imageError, setImageError] = useState(false);
+    
+    const url = `https://simcc.uesc.br/v3/api/ResearcherData/Image?researcher_id=${pesquisador.id}`;
 
+    useEffect(() => {
+        setImageError(false);
+    }, [pesquisador.id]);
+
+    const handleCardClick = () => {
+        if (onClick) {
+            onClick(pesquisador);
+        }
+    };
+    
     return (
         <DrawerTrigger asChild>
-            <div className="cursor-pointer h-80 w-60 rounded border border-border hover:bg-card-selection hover:shadow-sm bg-white pt-4 flex flex-col items-center transition-all pb-3">
+            <div onClick={handleCardClick} className="cursor-pointer h-80 w-60 rounded border border-border hover:bg-card-selection hover:shadow-sm bg-white pt-4 flex flex-col items-center transition-all pb-3">
                 <div className="overflow-hidden relative bg-neutral-100 border border-border rounded h-36 aspect-square flex justify-center items-center">
-                    {!url && <User className="text-neutral-600" size={"96"}/>}
-                    {url && 
-                    <Image alt="" src={url} fill={true} className="object-cover" unoptimized={true}/>
+                    {(imageError || !url) && <User className="text-neutral-600" size={"96"}/>}
+
+                    {url && !imageError && 
+                        <Image 
+                            alt={`Foto de ${pesquisador.name}`} 
+                            src={url} 
+                            fill={true} 
+                            className="object-cover" 
+                            unoptimized={true}
+                            onError={() => setImageError(true)}
+                        />
                     }
                 </div>
                 <div className="flex flex-col w-full px-8 pt-1">
                     <div className="min-h-[2.5rem] flex items-end">
                     <p className="text-sm font-medium leading-tight line-clamp-2">
-                        {nome}
+                        {pesquisador.name}
                     </p>
                     </div>
 
@@ -91,13 +134,12 @@ const CardPesquisadorEmpresa = ({nome, instituicao, url}:{
                                 <div className="rounded-full bg-white outline-1  outline-neutral-400 aspect-square h-2"></div>
                             </div>
                         </div>
-
                     </div>
                 </div>
-                            
             </div>
         </DrawerTrigger>
     );
 }
+
 
 export { CardPesquisador, CardPesquisadorEmpresa }

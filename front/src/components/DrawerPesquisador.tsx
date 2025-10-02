@@ -6,11 +6,13 @@ import {
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { User } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { Researcher } from "@/types/researchers.types";
 
 
-const DrawerPesquisador = ({ onCloseAutoFocus, children }: {
+const DrawerPesquisador = ({ onCloseAutoFocus, children, pesquisador }: {
     onCloseAutoFocus?: (event: Event) => void
-    children?: React.ReactNode
+    children?: React.ReactNode,
+    pesquisador: Researcher
 }) => {
     return (      
         <DrawerContent onCloseAutoFocus={onCloseAutoFocus} className="h-[95%]"> 
@@ -34,7 +36,7 @@ const DrawerPesquisador = ({ onCloseAutoFocus, children }: {
                         <div className="flex-shrink-0 flex flex-col w-full px-6 pt-2">
                             <div className="min-h-[2.5rem] flex items-end">
                                 <p className="text-2xl font-medium leading-tight line-clamp-2">
-                                    Victor Romano Arcuri 
+                                    {pesquisador && pesquisador.name} 
                                 </p>
                             </div>
                             <div className="w-full h-1 bg-eng-primary" />
