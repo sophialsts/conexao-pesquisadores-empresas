@@ -1,4 +1,5 @@
 import { SearchBar } from "@/components/SearchBar";
+import { EmpresasSugeridas } from "@/components/EmpresasSugeridas";
 
 const HeroEmpresas = () => {
   return (
@@ -15,6 +16,7 @@ const HeroEmpresas = () => {
 
         <div className="w-full max-w-5xl">
           <SearchBar placeholder="Pesquise sua empresa" />
+          <EmpresasSugeridas/>
         </div>
       </div>
     </section>

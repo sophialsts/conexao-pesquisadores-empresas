@@ -1,10 +1,11 @@
 import { HeroEmpresas } from "@/components/Hero";
-import { SearchBar } from "@/components/SearchBar";
+import { PesquisadoresSugeridosParaEmpresasArea } from "@/components/PesquisadoresSugeridos";
 
 export default function EmpresasPage() {
   return (
     <div className="font-sans">
         <HeroEmpresas/>
+        <PesquisadoresSugeridosParaEmpresasArea/>
     </div>
   );
 }
