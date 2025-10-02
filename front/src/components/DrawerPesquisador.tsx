@@ -7,6 +7,7 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { User } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
+
 const DrawerPesquisador = ({ onCloseAutoFocus, children }: {
     onCloseAutoFocus?: (event: Event) => void
     children?: React.ReactNode
@@ -25,13 +26,8 @@ const DrawerPesquisador = ({ onCloseAutoFocus, children }: {
                         {children}
                     </div>
 
-                    <div className="px-10 md:hidden">
-                        <Separator className="my-6"/>
-                    </div>
+                    <div className="order-first md:order-none flex-shrink-0 flex flex-col items-center pt-10 px-10 pb-10 w-full md:w-[450px] border-l border-b">
 
-                    <Separator orientation="vertical" className="h-auto mx-2 hidden md:block" />
-
-                    <div className="order-first md:order-none flex-shrink-0 flex flex-col items-center pt-10 px-10 pb-10 w-full md:w-[450px]">
                         <div className="flex-shrink-0 bg-neutral-100 flex justify-center items-center aspect-square rounded-2xl border border-border h-60">
                             <User className="text-neutral-600" size={150}/>
                         </div>
