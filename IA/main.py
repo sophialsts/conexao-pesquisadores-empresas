@@ -40,12 +40,12 @@ def main():
     # 4. Inserção das Avaliações (agora com a justificativa)
     print("\nEtapa 3: Inserindo avaliações no banco de dados...")
     if empresas_pesquisadores_relacoes:
-        processar_e_inserir_avaliacoes(empresas_pesquisadores_relacoes, db_config)
+        processar_e_inserir_avaliacoes(empresas_pesquisadores_relacoes, db_config) # para empresas
     
     # 5. Inserção das Recomendações Finais
     print("\nEtapa 4: Inserindo recomendações no banco de dados...")
     if empresas_pesquisadores_relacoes:
-        inserir_recomendacoes(empresas_pesquisadores_relacoes, db_config)
+        inserir_recomendacoes(empresas_pesquisadores_relacoes, db_config) # para pesquisadores
 
     print("\n🎉 Processo finalizado!")
 

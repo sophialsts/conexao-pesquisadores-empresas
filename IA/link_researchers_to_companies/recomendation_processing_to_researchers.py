@@ -23,8 +23,9 @@ def inserir_recomendacoes(dados_relacoes: list, db_config: dict):
         company_id_map = _buscar_mapeamento_empresas(conexao)
 
         for relacao in dados_relacoes:
-            # Apenas processa relações que geraram uma justificativa (são recomendações de fato)
-            if relacao.get("justificativa"):
+            justificativa_para_pesquisador = relacao.get("justificativa_pesquisador")
+            
+            if justificativa_para_pesquisador:
                 company_name = relacao.get("companie_name")
                 company_id = company_id_map.get(company_name)
                 
@@ -37,7 +38,7 @@ def inserir_recomendacoes(dados_relacoes: list, db_config: dict):
                     company_id,
                     company_name,
                     relacao.get("area"),
-                    relacao.get("justificativa")
+                    justificativa_para_pesquisador
                 )
                 dados_para_inserir.append(linha_formatada)
 
@@ -56,12 +57,12 @@ def inserir_recomendacoes(dados_relacoes: list, db_config: dict):
                 execute_batch(cursor, sql_insert, dados_para_inserir)
 
             conexao.commit()
-            print(f"✅ Sucesso! {len(dados_para_inserir)} recomendações inseridas/atualizadas.")
+            print(f"✅ Sucesso! {len(dados_para_inserir)} recomendações PARA PESQUISADORES inseridas/atualizadas.")
         else:
-            print("ℹ️ Nenhuma recomendação com justificativa válida para inserir.")
+            print("ℹ️ Nenhuma recomendação com justificativa válida (para pesquisadores) foi encontrada para inserir.")
 
     except Exception as e:
-        print(f"🚨 Erro ao inserir recomendações: {e}")
+        print(f"🚨 Erro ao inserir recomendações para pesquisadores: {e}")
         if conexao:
             conexao.rollback()
     finally:

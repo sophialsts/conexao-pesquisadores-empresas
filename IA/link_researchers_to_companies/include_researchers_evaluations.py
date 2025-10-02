@@ -30,19 +30,18 @@ def processar_e_inserir_avaliacoes(dados_avaliacoes: list, db_config: dict):
             company_name = avaliacao.get("companie_name")
             researcher_id = avaliacao.get("researcher_id")
             
-            # Pula o registro se o nome da empresa não estiver no banco
             company_id = company_id_map.get(company_name)
             if not company_id:
                 print(f"Aviso: Empresa '{company_name}' não encontrada no banco. Pulando registro.")
                 continue
 
-            justificativa = avaliacao.get("justificativa")
+            justificativa_para_empresa = avaliacao.get("justificativa_empresa")
 
             # Transforma uma avaliação em múltiplas linhas (uma por critério)
             for criterio in CRITERIOS_A_PROCESSAR:
                 if criterio in avaliacao:
                     valor = avaliacao[criterio]
-                    linha_formatada = (researcher_id, company_id, criterio, valor, justificativa)
+                    linha_formatada = (researcher_id, company_id, criterio, valor, justificativa_para_empresa)
                     dados_para_inserir.append(linha_formatada)
         
         if dados_para_inserir:
