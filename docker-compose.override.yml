@@ -24,6 +24,8 @@ services:
     volumes:
       - ./front:/usr/src/app
       - /usr/src/app/node_modules
+    environment:
+      NEXT_PUBLIC_BACK_URL: "http://back:5000"
   back:
     build:
       context: ./back
@@ -41,6 +43,7 @@ services:
     environment:
       DB_URL: "postgresql://postgres:${DB_SENHA}@db:5432/${DB_BANCO}"
       OPENAI_API_KEY: ${OPENAI_API_KEY}
+      FRONT_URL: "http://localhost:${FRONT_PORT}"
 
 volumes:
   pgdata:
