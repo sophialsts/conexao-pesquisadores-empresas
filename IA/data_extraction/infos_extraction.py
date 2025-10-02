@@ -20,8 +20,8 @@ def configurar_path():
 
 def obter_pesquisadores():
     lista_dicts_pesquisadores = []
-    
-    caminho_arquivo = os.path.join(configurar_path(), "data", "dados_relevantes.csv")
+  
+    caminho_arquivo = os.path.join(configurar_path(), "data", "amostra_pesquisadores.csv")
     
     try:
         with open(caminho_arquivo, 'r', encoding='utf-8') as arquivo:
@@ -30,9 +30,11 @@ def obter_pesquisadores():
             for linha in leitor:
                 abstract = linha.get('abstract', '')
                 id_pesquisador = linha.get('researcher_id', '')
+                nome_evento = linha.get('event_name', '')
                 dict_pesquisador = {
                     "researcher_id": id_pesquisador,
-                    "abstract": abstract 
+                    "abstract": abstract,
+                    "event_name": nome_evento
                 }
                 lista_dicts_pesquisadores.append(dict_pesquisador)
             
@@ -56,9 +58,11 @@ def obter_empresas():
             for linha in leitor:
                 descricao = linha.get('descricao', '')
                 nomes_empresas = linha.get('nome', '')
+                área = linha.get('area', '')
                 dict_empresa = {
                     "nome_empresa": nomes_empresas,
-                    "descricao": descricao
+                    "descricao": descricao,
+                    "area": área
                 }
                 lista_dict_empresas.append(dict_empresa)
             
@@ -69,3 +73,5 @@ def obter_empresas():
         return []
     
     return lista_dict_empresas
+
+# obter_pesquisadores()
