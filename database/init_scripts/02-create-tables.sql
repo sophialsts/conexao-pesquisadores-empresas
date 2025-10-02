@@ -12,6 +12,17 @@ CREATE TABLE "companies" (
   "updated_at" timestamptz DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE "researchers" (
+  "researcher_id" uuid PRIMARY KEY,
+  "name" VARCHAR(255) NOT NULL UNIQUE,
+  "embedding" VECTOR(1536),
+  "abstract" TEXT,
+  "instituicao" VARCHAR(150),
+  "sigla" VARCHAR(15),
+  "created_at" timestamptz DEFAULT CURRENT_TIMESTAMP,
+  "updated_at" timestamptz DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE "company_recommendations_for_researchers" (
   "researcher_id" uuid NOT NULL,
   "company_id" uuid NOT NULL,

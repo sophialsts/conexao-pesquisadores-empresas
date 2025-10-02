@@ -5,6 +5,7 @@ from data_extraction.infos_extraction import obter_pesquisadores, obter_empresas
 from link_researchers_to_companies.semantic_relational import reasons_for_companies
 from link_researchers_to_companies.include_researchers_evaluations import processar_e_inserir_avaliacoes
 from embeddings.insert_companies_info import inserir_nomes_e_embeddings_empresas
+from embeddings.insert_researchers_info import inserir_nomes_e_embeddings_pesquisadores
 from link_researchers_to_companies.recomendation_processing_to_researchers import inserir_recomendacoes
 
 def main():
@@ -25,8 +26,9 @@ def main():
         return
 
     # 2. Inserção de Empresas e Embeddings
-    print("\nEtapa 1: Inserindo empresas no banco de dados...")
+    print("\nEtapa 1: Inserindo empresas e pesquisadores no banco de dados...")
     inserir_nomes_e_embeddings_empresas(db_config)
+    inserir_nomes_e_embeddings_pesquisadores(db_config)
 
     # 3. Relacionamento Semântico
     print("\nEtapa 2: Relacionando pesquisadores e empresas...")
@@ -43,7 +45,6 @@ def main():
     # 5. Inserção das Recomendações Finais
     print("\nEtapa 4: Inserindo recomendações no banco de dados...")
     if empresas_pesquisadores_relacoes:
-        # CHAME A NOVA FUNÇÃO AQUI, USANDO OS MESMOS DADOS
         inserir_recomendacoes(empresas_pesquisadores_relacoes, db_config)
 
     print("\n🎉 Processo finalizado!")
