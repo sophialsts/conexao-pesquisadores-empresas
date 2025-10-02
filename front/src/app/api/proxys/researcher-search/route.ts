@@ -23,6 +23,8 @@ export async function GET(request: NextRequest) {
       return {
         id: pesquisador.researcher_id,
         name: pesquisador.name,
+        instituicao: pesquisador.instituicao,
+        sigla: pesquisador.sigla
       };
     });
 

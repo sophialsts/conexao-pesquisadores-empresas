@@ -1,6 +1,15 @@
 export type Researcher = {
   id: string,
   name: string
+  sigla: string,
+  instituicao: string
+};
+
+export type ResearcherWithAbstract = {
+  id: string,
+  name: string
+  sigla: string,
+  instituicao: string
 };
 
 export type RecommendationCriterion = {
@@ -11,13 +20,13 @@ export type RecommendationCriterion = {
 export type RecommendedResearcher = {
     id: string,
     name: string,
-    criteria: RecommendationCriterion[]
-    recomendationReason: string | null
+    sigla: string,
+    instituicao: string
+    criteria: RecommendationCriterion[],
+    recommendationReason: string
 }
 
 export type ResearcherSortBy = 
-  'average' | 
-  'research_alignment' |
-  'innovation_potential' |
-  'cultural_fit' |
-  'relevant_experience';
+  'flexibilidade' | 
+  'areaEstudo' |
+  'experienciaAcademica';

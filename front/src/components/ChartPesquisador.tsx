@@ -2,7 +2,7 @@
 
 import { UserCheck } from "lucide-react"
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from "recharts"
-
+import { RecommendationCriterion } from "@/types/researchers.types"
 import {
   Card,
   CardContent,
@@ -33,7 +33,19 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export function ChartPesquisador() {
+
+
+export function ChartPesquisador({ criteria }: { criteria: RecommendationCriterion[] }) {
+  const criteriaLabels: { [key: string]: string } = {
+    areaEstudo: 'Área de Estudo',
+    flexibilidade: 'Flexibilidade',
+    experienciaAcademica: 'Experiência Acadêmica',
+  };
+  
+  const chartData = criteria.map(c => ({
+    criterio: criteriaLabels[c.criterionName] || c.criterionName,
+    valor: c.value,
+  }));
   return (
     <Card className="shadow-none">
       <CardHeader className="items-center pb-4">

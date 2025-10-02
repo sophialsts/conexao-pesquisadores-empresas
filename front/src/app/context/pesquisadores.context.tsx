@@ -1,6 +1,5 @@
 "use client";
 import { createContext, useContext, useState, Dispatch, SetStateAction } from "react";
-import { RecommendedCompany } from "@/types/companies.types";
 import { Researcher } from "@/types/researchers.types";
 
 type PesquisadoresContextType = {

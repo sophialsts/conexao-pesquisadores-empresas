@@ -5,10 +5,10 @@ import { DrawerTrigger } from "@/components/ui/drawer";
 import Image from "next/image";
 import { RecommendedResearcher, Researcher } from "@/types/researchers.types";
 import { useEffect, useState } from "react";
+import { RatingDots } from "./RatingDots";
 
-const CardPesquisador = ({pesquisador, instituicao, onClick}:{
+const CardPesquisador = ({pesquisador, onClick}:{
     pesquisador: Researcher,
-    instituicao: string,
     url?:string,
     onClick?: (pesquisador: Researcher) => void;
 }) => {
@@ -51,7 +51,7 @@ const CardPesquisador = ({pesquisador, instituicao, onClick}:{
                     <div className="w-full h-1 bg-eng-primary" />
 
                     <p className="text-xs text-left font-normal line-clamp-2">
-                    {instituicao}
+                    {pesquisador.sigla}
                     </p>
                 </div>
             </div>
@@ -59,9 +59,8 @@ const CardPesquisador = ({pesquisador, instituicao, onClick}:{
     );
 }
 
-const CardPesquisadorEmpresa = ({pesquisador, instituicao, onClick}:{
+const CardPesquisadorEmpresa = ({pesquisador, onClick}:{
     pesquisador: RecommendedResearcher,
-    instituicao: string,
     onClick?: (pesquisador: RecommendedResearcher) => void;
 }) => {
     const [imageError, setImageError] = useState(false);
@@ -77,6 +76,23 @@ const CardPesquisadorEmpresa = ({pesquisador, instituicao, onClick}:{
             onClick(pesquisador);
         }
     };
+
+    const getCriterionLabel = (criterion: string) => {
+        switch(criterion){
+            case 'areaEstudo':
+                return "Área de Estudo";
+                break;
+            case 'flexibilidade':
+                return "Flexibilidade";
+                break;
+            case 'experienciaAcademica':
+                return "Experiência Acadêmica";
+                break;
+            default:
+                return "Ordenar";
+                break;
+        }
+    }
     
     return (
         <DrawerTrigger asChild>
@@ -105,35 +121,20 @@ const CardPesquisadorEmpresa = ({pesquisador, instituicao, onClick}:{
                     <div className="w-full h-1 bg-eng-primary" />
 
                     <p className="text-xs text-left font-normal line-clamp-2">
-                    {instituicao}
+                    {pesquisador.sigla}
                     </p>
                 </div>
                 <div className="w-full px-4 pt-2">
                     <div className="bg-neutral-200 rounded flex flex-col text-xs font-medium">
-                        <div className="flex justify-between items-center p-1.5 border-b border-neutral-300">
-                            <p>Área de Estudo</p>
-                            <div className="flex items-center gap-1">
-                                <div className="rounded-full bg-neutral-400 outline-1 outline-neutral-400  aspect-square h-2"></div>
-                                <div className="rounded-full bg-neutral-400 outline-1 outline-neutral-400  aspect-square h-2"></div>
-                                <div className="rounded-full bg-neutral-400 outline-1  outline-neutral-400 aspect-square h-2"></div>
+                        {pesquisador.criteria && pesquisador.criteria.map((criterion, index) => (
+                            <div 
+                                key={criterion.criterionName}
+                                className={`flex justify-between items-center p-1.5 ${index < pesquisador.criteria.length - 1 ? 'border-b border-neutral-300' : ''}`}
+                            >
+                                <p>{getCriterionLabel(criterion.criterionName)}</p>
+                                <RatingDots score={criterion.value} />
                             </div>
-                        </div>
-                        <div className="flex justify-between items-center p-1.5 border-b border-neutral-300">
-                            <p>Flexibilidade</p>
-                            <div className="flex items-center gap-1">
-                                <div className="rounded-full bg-neutral-400 outline-1 outline-neutral-400  aspect-square h-2"></div>
-                                <div className="rounded-full bg-neutral-400 outline-neutral-400  aspect-square h-2"></div>
-                                <div className="rounded-full bg-white outline-1  outline-neutral-400 aspect-square h-2"></div>
-                            </div>
-                        </div>
-                        <div className="flex justify-between items-center p-1.5">
-                            <p>Experiência Acadêmica</p>
-                            <div className="flex items-center gap-1">
-                                <div className="rounded-full bg-neutral-400 outline-1 outline-neutral-400  aspect-square h-2"></div>
-                                <div className="rounded-full bg-white outline-1 outline-neutral-400  aspect-square h-2"></div>
-                                <div className="rounded-full bg-white outline-1  outline-neutral-400 aspect-square h-2"></div>
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
             </div>

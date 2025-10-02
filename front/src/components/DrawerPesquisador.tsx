@@ -7,13 +7,23 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { User } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Researcher } from "@/types/researchers.types";
+import { useQuery } from "@tanstack/react-query";
 
 
-const DrawerPesquisador = ({ onCloseAutoFocus, children, pesquisador }: {
+const DrawerPesquisador = ({ onCloseAutoFocus, children, pesquisadorId }: {
     onCloseAutoFocus?: (event: Event) => void
     children?: React.ReactNode,
-    pesquisador: Researcher
+    pesquisadorId: string
+
 }) => {
+    const { data: pesquisador } = useQuery({
+    queryKey: ["pesquisador", pesquisadorId],
+    queryFn: () => fetch(`/api/proxys/researcher-retrieve-by-id?id=${encodeURI(pesquisadorId)}`).then(r => r.json()),
+    enabled: !!pesquisadorId,
+    });
+
+    
+   
     return (      
         <DrawerContent onCloseAutoFocus={onCloseAutoFocus} className="h-[95%]"> 
             <VisuallyHidden>
@@ -41,7 +51,7 @@ const DrawerPesquisador = ({ onCloseAutoFocus, children, pesquisador }: {
                             </div>
                             <div className="w-full h-1 bg-eng-primary" />
                             <p className="text-left font-normal line-clamp-2">
-                                UFMG
+                                {pesquisador && pesquisador.sigla}
                             </p>
                         </div>
                         <div className="mt-8 w-full pl-4">
@@ -49,7 +59,7 @@ const DrawerPesquisador = ({ onCloseAutoFocus, children, pesquisador }: {
                         </div>
                         <Separator/>
                         <div className="px-4 pt-2 w-full">
-                            <p className="w-full text-sm">  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus pretium pharetra elit eget viverra. Proin hendrerit, felis ac iaculis eleifend, odio diam ornare dui, eu rhoncus nulla elit eu nisl. Aenean pellentesque nibh in arcu aliquet cursus. Nunc convallis orci eget tincidunt accumsan. Cras a lacus sed ligula condimentum tempus. Morbi non eros sit amet mi aliquam auctor non a quam. Praesent rhoncus volutpat condimentum. Integer rutrum facilisis ultricies. Aliquam at felis sodales, finibus neque nec, fermentum dui. Sed convallis blandit ipsum sollicitudin mollis. Aliquam quis arcu aliquet, porta ex at, porta nulla. Phasellus magna erat, egestas ac massa vel, congue condimentum metus. Aenean blandit id justo ac congue. Integer augue odio, pellentesque in sapien ut, semper rhoncus tellus.  </p>
+                            <p className="w-full text-sm">  {pesquisador && pesquisador.abstract}  </p>
                         </div>
                     </div>
                 </div>
