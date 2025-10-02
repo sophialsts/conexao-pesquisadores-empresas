@@ -1,9 +1,9 @@
-import { researcherWithIdAndName } from '@/selectors/researchers.selectors.js';
+import { researcherWithIdNameAbstractAndInstitution } from '@/selectors/researchers.selectors.js';
 import { Prisma } from '@prisma/client';
 import { evaluation_criterion_type } from '@prisma/client';
 
 export type Researcher = Prisma.researchersGetPayload<{
-  select: typeof researcherWithIdAndName;
+  select: typeof researcherWithIdNameAbstractAndInstitution;
 }>;
 
 export type RecommendationCriterion = {
@@ -14,8 +14,11 @@ export type RecommendationCriterion = {
 export type RecommendedResearcher = {
     id: string,
     name: string,
+    abstract: string | null,
+    instituicao: string | null,
+    sigla: string | null
     criteria: RecommendationCriterion[],
-    recommendationReason: string | null
+    recommendationReason: string | null,
 }
 
 export type ResearcherSortBy = 'average' | evaluation_criterion_type;

@@ -51,13 +51,15 @@ model researchers {
   researcher_id String                 @id @db.Uuid
   name          String                 @unique @db.VarChar(255)
   embedding     Unsupported("vector")?
+  abstract      String?
+  instituicao   String?                @db.VarChar(150)
+  sigla         String?                @db.VarChar(15)
   created_at    DateTime?              @default(now()) @db.Timestamptz(6)
   updated_at    DateTime?              @default(now()) @db.Timestamptz(6)
 }
 
 enum evaluation_criterion_type {
-  research_alignment
-  innovation_potential
-  cultural_fit
-  relevant_experience
+  areaEstudo
+  flexibilidade
+  experienciaAcademica
 }

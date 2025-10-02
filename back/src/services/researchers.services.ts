@@ -1,13 +1,13 @@
 import prisma from "@/config/prismaClient.js"
 import { getEmbedding } from "@/utils/index.js";
-import { researcherWithIdAndName } from "@/selectors/researchers.selectors.js";
+import { researcherWithIdNameAbstractAndInstitution, researcherWithIdNameAndInstitution } from "@/selectors/researchers.selectors.js";
 import { RecommendedResearcher, Researcher, ResearcherSortBy } from "@/types/researchers.types.js";
 import { Prisma } from "@prisma/client";
 
-const getResearchers = async (limit:number = 10): Promise<Researcher[]> => {
+const getResearchers = async (limit:number = 10) => {
     return prisma.researchers.findMany({
         take: limit,
-        select: researcherWithIdAndName
+        select: researcherWithIdNameAndInstitution
     });
 }
 
@@ -28,7 +28,9 @@ const getResearchersBySimilarity = async (
   const results = await prisma.$queryRaw<Researcher[]>`
     SELECT
       researcher_id,
-      name
+      name,
+      instituicao,
+      sigla
     FROM
       researchers,
       to_tsquery('public.portuguese_unaccent', ${processedQuery}) query
@@ -48,7 +50,7 @@ const getResearcherById = async (id:string): Promise<Researcher|null> => {
         where: {
            researcher_id: id, 
         },
-        select: researcherWithIdAndName
+        select: researcherWithIdNameAbstractAndInstitution
     });
 }
 
@@ -59,28 +61,28 @@ async function getRecommendedResearchersForCompany(
   let orderByClause: Prisma.Sql;
 
   switch (sortBy) {
-    case 'research_alignment':
-      orderByClause = Prisma.sql`ORDER BY MAX(CASE WHEN eval.criterion_name = 'research_alignment' THEN eval.criterion_value END) DESC NULLS LAST`;
+    case 'areaEstudo':
+      orderByClause = Prisma.sql`ORDER BY MAX(CASE WHEN eval.criterion_name = 'areaEstudo' THEN eval.criterion_value END) DESC NULLS LAST`;
       break;
-    case 'innovation_potential':
-      orderByClause = Prisma.sql`ORDER BY MAX(CASE WHEN eval.criterion_name = 'innovation_potential' THEN eval.criterion_value END) DESC NULLS LAST`;
+    case 'flexibilidade':
+      orderByClause = Prisma.sql`ORDER BY MAX(CASE WHEN eval.criterion_name = 'areaEstudo' THEN eval.criterion_value END) DESC NULLS LAST`;
       break;
-    case 'cultural_fit':
-      orderByClause = Prisma.sql`ORDER BY MAX(CASE WHEN eval.criterion_name = 'cultural_fit' THEN eval.criterion_value END) DESC NULLS LAST`;
+    case 'experienciaAcademica':
+      orderByClause = Prisma.sql`ORDER BY MAX(CASE WHEN eval.criterion_name = 'experienciaAcademica' THEN eval.criterion_value END) DESC NULLS LAST`;
       break;
-    case 'relevant_experience':
-      orderByClause = Prisma.sql`ORDER BY MAX(CASE WHEN eval.criterion_name = 'relevant_experience' THEN eval.criterion_value END) DESC NULLS LAST`;
-      break;
+
     case 'average':
     default:
       orderByClause = Prisma.sql`ORDER BY AVG(eval.criterion_value) DESC NULLS LAST`;
       break;
   }
   
-  const baseQuery = Prisma.sql`
+    const baseQuery = Prisma.sql`
     SELECT
       eval.researcher_id AS id,
       r.name AS name,
+      r.sigla as sigla,
+      r.instituicao as instituicao,
       jsonb_agg(
         jsonb_build_object(
           'criterionName', eval.criterion_name,
@@ -96,8 +98,12 @@ async function getRecommendedResearchersForCompany(
     WHERE
       eval.company_id = ${companyId}::uuid
     GROUP BY
-      eval.researcher_id, r.name
+      eval.researcher_id, 
+      r.name,
+      r.sigla,
+      r.instituicao
   `;
+
 
   const finalQuery = Prisma.sql`${baseQuery} ${orderByClause}`;
 
