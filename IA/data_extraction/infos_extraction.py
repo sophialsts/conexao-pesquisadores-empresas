@@ -21,7 +21,7 @@ def configurar_path():
 def obter_pesquisadores():
     lista_dicts_pesquisadores = []
   
-    caminho_arquivo = os.path.join(projeto_raiz, "data", "amostra_pesquisadores.csv")
+    caminho_arquivo = os.path.join(configurar_path(), "data", "amostra_pesquisadores.csv")
     
     try:
         with open(caminho_arquivo, 'r', encoding='utf-8') as arquivo:
