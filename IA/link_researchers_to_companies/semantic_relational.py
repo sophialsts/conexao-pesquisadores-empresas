@@ -106,8 +106,9 @@ def generate_link_reason(empresa: dict, pesquisador: dict) -> dict: # Adicionado
         if soma_ponderada <= 3.2: analysis_response.justificativa = None
 
         result = {
-            "companie_name": empresa['nome_empresa'], # Necessário para buscar pelo id da empresa depois
+            "companie_name": empresa['nome_empresa'],
             "researcher_id": pesquisador["researcher_id"],
+            "area": empresa['area'],  # <--- ADICIONE ESTA LINHA
             "areaEstudo": analysis_response.areaEstudo,
             "flexibilidade": analysis_response.flexibilidade,
             "experienciaAcademica": analysis_response.experienciaAcademica,

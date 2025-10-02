@@ -1,4 +1,5 @@
 import psycopg2
+from psycopg2.extras import execute_batch
 
 def _buscar_mapeamento_empresas(conexao):
     """Função auxiliar para buscar um mapa de nome_empresa -> id."""
@@ -35,21 +36,26 @@ def processar_e_inserir_avaliacoes(dados_avaliacoes: list, db_config: dict):
                 print(f"Aviso: Empresa '{company_name}' não encontrada no banco. Pulando registro.")
                 continue
 
+            justificativa = avaliacao.get("justificativa")
+
             # Transforma uma avaliação em múltiplas linhas (uma por critério)
             for criterio in CRITERIOS_A_PROCESSAR:
                 if criterio in avaliacao:
                     valor = avaliacao[criterio]
-                    linha_formatada = (researcher_id, company_id, criterio, valor)
+                    linha_formatada = (researcher_id, company_id, criterio, valor, justificativa)
                     dados_para_inserir.append(linha_formatada)
         
         if dados_para_inserir:
             with conexao.cursor() as cursor:
                 sql_insert = """
                     INSERT INTO researcher_evaluations_by_company 
-                    (researcher_id, company_id, criterion_name, criterion_value) 
-                    VALUES (%s, %s, %s, %s)
+                    (researcher_id, company_id, criterion_name, criterion_value, recommendation_reason) 
+                    VALUES (%s, %s, %s, %s, %s)
+                    ON CONFLICT (researcher_id, company_id, criterion_name) DO UPDATE SET
+                        criterion_value = EXCLUDED.criterion_value,
+                        recommendation_reason = EXCLUDED.recommendation_reason,
+                        updated_at = CURRENT_TIMESTAMP;
                 """
-                from psycopg2.extras import execute_batch
                 execute_batch(cursor, sql_insert, dados_para_inserir)
                 
             conexao.commit()

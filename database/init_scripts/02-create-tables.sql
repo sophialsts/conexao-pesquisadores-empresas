@@ -12,24 +12,10 @@ CREATE TABLE "companies" (
   "updated_at" timestamptz DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE "embedding_curriculos" (
-  "researcher_id" uuid PRIMARY KEY,
-  "abstract_embeddings" VECTOR(1536),
-  "articles_embeddings" VECTOR(1536),
-  "project_name_embeddings" VECTOR(1536),
-  "description_project_embeddings" VECTOR(1536),
-  "great_area_embeddings" VECTOR(1536),
-  "area_specialty_embeddings" VECTOR(1536),
-  "patent_embeddings" VECTOR(1536),
-  "book_chapter_embeddings" VECTOR(1536),
-  "event_name_embeddings" VECTOR(1536),
-  "created_at" timestamptz DEFAULT CURRENT_TIMESTAMP,
-  "updated_at" timestamptz DEFAULT CURRENT_TIMESTAMP
-);
-
 CREATE TABLE "company_recommendations_for_researchers" (
   "researcher_id" uuid NOT NULL,
   "company_id" uuid NOT NULL,
+  "company_name" varchar(255),
   "area" varchar(255),
   "recommendation_reason" text,
   "created_at" timestamptz DEFAULT CURRENT_TIMESTAMP,
@@ -42,7 +28,7 @@ CREATE TABLE "researcher_evaluations_by_company" (
   "company_id" uuid NOT NULL,
   "criterion_name" evaluation_criterion_type NOT NULL,
   "criterion_value" real NOT NULL,
-  "criterion_text" text,
+  "recommendation_reason" text,
   "created_at" timestamptz DEFAULT CURRENT_TIMESTAMP,
   "updated_at" timestamptz DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY ("researcher_id", "company_id", "criterion_name")
