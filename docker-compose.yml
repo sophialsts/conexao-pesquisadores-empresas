@@ -15,6 +15,8 @@ services:
       context: ./front
       dockerfile: front.dockerfile
       target: prod
+    depends_on:
+      - back
     image: ${FRONT_NOME_IMAGEM}
     container_name: ${FRONT_NOME_CONTAINER}
     ports:
@@ -24,10 +26,15 @@ services:
       context: ./back
       dockerfile: back.dockerfile
       target: prod
+    depends_on:
+      - db
     image: ${BACK_NOME_IMAGEM}
     container_name: ${BACK_NOME_CONTAINER}
     ports:
       - "${BACK_PORT}:5000"
+    environment:
+      DB_URL: "postgresql://postgres:${DB_SENHA}@db:5432/${DB_BANCO}"
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
 
 volumes:
   pgdata:

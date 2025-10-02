@@ -6,9 +6,12 @@ WORKDIR usr/src/app
 COPY package*.json ./
 
 RUN npm install
-EXPOSE 5000
+
 COPY . .
 
+RUN npx prisma generate
+
+EXPOSE 5000
 
 # Dev: inicia em ambiente de desenvolvimento com hot reload
 FROM base AS dev
