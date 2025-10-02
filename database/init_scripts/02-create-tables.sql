@@ -1,8 +1,7 @@
 CREATE TYPE "evaluation_criterion_type" AS ENUM (
-  'research_alignment',
-  'innovation_potential',
-  'cultural_fit',
-  'relevant_experience'
+  'areaEstudo',
+  'flexibilidade',
+  'experienciaAcademica'
 );
 
 CREATE TABLE "companies" (
@@ -51,15 +50,7 @@ CREATE TABLE "researcher_evaluations_by_company" (
 
 COMMENT ON COLUMN "companies"."embedding" IS 'Requires the pgvector extension in PostgreSQL';
 
-COMMENT ON COLUMN "company_recommendations_for_researchers"."researcher_id" IS 'References embedding_curriculos.researcher_id';
-
-COMMENT ON COLUMN "researcher_evaluations_by_company"."researcher_id" IS 'References embedding_curriculos.researcher_id';
-
 COMMENT ON COLUMN "researcher_evaluations_by_company"."criterion_value" IS 'Value must be between 0.0 and 1.0';
-
-ALTER TABLE "company_recommendations_for_researchers" ADD FOREIGN KEY ("researcher_id") REFERENCES "embedding_curriculos" ("researcher_id") ON DELETE CASCADE;
-
-ALTER TABLE "researcher_evaluations_by_company" ADD FOREIGN KEY ("researcher_id") REFERENCES "embedding_curriculos" ("researcher_id") ON DELETE CASCADE;
 
 ALTER TABLE "company_recommendations_for_researchers" ADD FOREIGN KEY ("company_id") REFERENCES "companies" ("id") ON DELETE CASCADE;
 

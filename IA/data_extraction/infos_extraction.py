@@ -57,7 +57,7 @@ def obter_empresas():
             
             i=0
             for linha in leitor:
-                if i >= 50: break
+                if i >= 10: break
                 descricao = linha.get('descricao', '')
                 nomes_empresas = linha.get('nome', '')
                 área = linha.get('area', '')
