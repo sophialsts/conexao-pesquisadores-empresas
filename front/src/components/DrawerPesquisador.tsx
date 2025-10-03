@@ -8,6 +8,8 @@ import { User } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Researcher } from "@/types/researchers.types";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import Image from "next/image";
 
 
 const DrawerPesquisador = ({ onCloseAutoFocus, children, pesquisadorId }: {
@@ -21,6 +23,14 @@ const DrawerPesquisador = ({ onCloseAutoFocus, children, pesquisadorId }: {
     queryFn: () => fetch(`/api/proxys/researcher-retrieve-by-id?id=${encodeURI(pesquisadorId)}`).then(r => r.json()),
     enabled: !!pesquisadorId,
     });
+
+    const [imageError, setImageError] = useState(false);
+        
+        const url = `https://iapos-api.senaicimatec.com.br/ResearcherData/Image?researcher_id=${pesquisadorId}`;
+    
+        useEffect(() => {
+            setImageError(false);
+        }, [pesquisadorId]);
 
     
    
@@ -40,8 +50,19 @@ const DrawerPesquisador = ({ onCloseAutoFocus, children, pesquisadorId }: {
 
                     <div className="order-first md:order-none flex-shrink-0 flex flex-col items-center pt-10 px-10 pb-10 w-full md:w-[450px] border-l border-b">
 
-                        <div className="flex-shrink-0 bg-neutral-100 flex justify-center items-center aspect-square rounded-2xl border border-border h-60">
+                        <div className="relative flex-shrink-0 bg-neutral-100 flex justify-center items-center aspect-square rounded-2xl border border-border h-60">
                             <User className="text-neutral-600" size={150}/>
+                            {(imageError || !url || !pesquisador) && <User className="text-neutral-600" size={"150"}/>}
+                            
+                            {pesquisador && url && !imageError && 
+                                <Image 
+                                    alt={`Foto de ${pesquisador.name}`} 
+                                    src={url} 
+                                    fill={true} 
+                                    className="object-cover" 
+                                    unoptimized={true}
+                                    onError={() => setImageError(true)}/>
+                            }
                         </div>
                         <div className="flex-shrink-0 flex flex-col w-full px-6 pt-2">
                             <div className="min-h-[2.5rem] flex items-end">

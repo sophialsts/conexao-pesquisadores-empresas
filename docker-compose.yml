@@ -6,6 +6,7 @@ services:
       POSTGRES_PASSWORD: ${DB_SENHA}
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./database/init_scripts:/docker-entrypoint-initdb.d
     ports:
       - "${DB_PORT}:${DB_PORT}"
     container_name: ${DB_NOME_CONTAINER}

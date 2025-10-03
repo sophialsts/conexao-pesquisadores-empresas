@@ -34,7 +34,12 @@ FROM node:18 AS prod
 WORKDIR /usr/src/app
 
 COPY package*.json ./
+
 RUN npm install --production
+
+COPY prisma ./prisma
+
+RUN npx prisma generate
 
 COPY --from=builder /usr/src/app/dist ./dist
 

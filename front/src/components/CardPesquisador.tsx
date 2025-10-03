@@ -14,7 +14,7 @@ const CardPesquisador = ({pesquisador, onClick}:{
 }) => {
     const [imageError, setImageError] = useState(false);
 
-    const url = `https://simcc.uesc.br/v3/api/ResearcherData/Image?researcher_id=${pesquisador.id}`;
+    const url = `https://iapos-api.senaicimatec.com.br/ResearcherData/Image?researcher_id=${pesquisador.id}`;
     useEffect(() => {
         setImageError(false);
     }, [pesquisador.id]);
@@ -65,7 +65,7 @@ const CardPesquisadorEmpresa = ({pesquisador, onClick}:{
 }) => {
     const [imageError, setImageError] = useState(false);
     
-    const url = `https://simcc.uesc.br/v3/api/ResearcherData/Image?researcher_id=${pesquisador.id}`;
+    const url = `https://iapos-api.senaicimatec.com.br/ResearcherData/Image?researcher_id=${pesquisador.id}`;
 
     useEffect(() => {
         setImageError(false);

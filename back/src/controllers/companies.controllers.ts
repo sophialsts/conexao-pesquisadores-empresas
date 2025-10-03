@@ -4,7 +4,8 @@ import {
     getCompanyById as getCompanyByIdService
 } from "@/services/companies.services.js";
 import { ResearcherSortBy } from "@/types/researchers.types.js";
-import { evaluation_criterion_type } from "@prisma/client";
+import pkg from '@prisma/client';
+const { evaluation_criterion_type } = pkg;
 import { getRecommendedResearchersForCompany as getRecommendedResearchersForCompanyService } from "@/services/researchers.services.js";
 import { 
     NextFunction, 
