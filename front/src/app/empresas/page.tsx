@@ -1,10 +1,14 @@
 import { HeroEmpresas } from "@/components/Hero";
-import { SearchBar } from "@/components/SearchBar";
+import { PesquisadoresSugeridosParaEmpresasArea } from "@/components/PesquisadoresSugeridos";
+import { EmpresasProvider } from "../context/empresas.context";
 
 export default function EmpresasPage() {
   return (
     <div className="font-sans">
-        <HeroEmpresas/>
+        <EmpresasProvider>
+          <HeroEmpresas/>
+          <PesquisadoresSugeridosParaEmpresasArea/>
+        </EmpresasProvider>
     </div>
   );
 }

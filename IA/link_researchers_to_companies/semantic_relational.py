@@ -142,7 +142,7 @@ def reasons_for_companies(empresas: list[dict], pesquisadores: list[dict]) -> li
     tempo_inicial = time.time()
     i = 1
     for empresa in empresas:
-        if i == 2: break # Limitei para uma empresa só, ignora total_combinations
+        if i == 20: break # Limitei para uma empresa só, ignora total_combinations
         for pesquisador in pesquisadores:
             current_combination += 1
             print(f"Analisando combinação {current_combination}/{total_combinations}: Empresa '{empresa['nome_empresa']}' e Pesquisador '{pesquisador['researcher_id']}'")
