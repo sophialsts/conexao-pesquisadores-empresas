@@ -65,7 +65,7 @@ async function getRecommendedResearchersForCompany(
       orderByClause = Prisma.sql`ORDER BY MAX(CASE WHEN eval.criterion_name = 'areaEstudo' THEN eval.criterion_value END) DESC NULLS LAST`;
       break;
     case 'flexibilidade':
-      orderByClause = Prisma.sql`ORDER BY MAX(CASE WHEN eval.criterion_name = 'areaEstudo' THEN eval.criterion_value END) DESC NULLS LAST`;
+      orderByClause = Prisma.sql`ORDER BY MAX(CASE WHEN eval.criterion_name = 'flexibilidade' THEN eval.criterion_value END) DESC NULLS LAST`;
       break;
     case 'experienciaAcademica':
       orderByClause = Prisma.sql`ORDER BY MAX(CASE WHEN eval.criterion_name = 'experienciaAcademica' THEN eval.criterion_value END) DESC NULLS LAST`;
